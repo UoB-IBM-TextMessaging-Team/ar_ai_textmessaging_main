@@ -1,7 +1,4 @@
-// import 'dart:html';
-
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
@@ -25,8 +22,10 @@ class _UserSettingState extends State<UserSetting> {
   final ImagePicker _picker = ImagePicker();
   firebase_storage.FirebaseStorage storage =
       firebase_storage.FirebaseStorage.instance;
-  String picture = "";
+  String picture =
+      ""; // picture in the firebase store (defalut: picture is empty)
   bool change = false;
+  //find the picture in the firebase store
   Future findProfilePic() async {
     try {
       await FirebaseFirestore.instance
@@ -47,6 +46,7 @@ class _UserSettingState extends State<UserSetting> {
     findProfilePic();
   }
 
+  //upload picture to the firebase store and storage
   Future uploadFile() async {
     if (_photo == null) return;
     final destination = 'username/$user';
@@ -66,8 +66,6 @@ class _UserSettingState extends State<UserSetting> {
           .ref(destination)
           .child('${user}_profile_Picture/');
       final String downloadUrl = await ref.getDownloadURL();
-      // CollectionReference users = FirebaseFirestore.instance.collection("users");
-      // use
       await FirebaseFirestore.instance
           .collection("users")
           .doc(useremail)
@@ -168,28 +166,14 @@ class _UserSettingState extends State<UserSetting> {
           FutureBuilder(
               future: findProfilePic(),
               builder: (context, snapshot) {
-                return CircleAvatar(
-                    radius: 80.0,
-                    // backgroundImage: _photo == null
-                    //     ? const AssetImage('assets/images/user1.png') as ImageProvider
-                    //     : FileImage(File(_photo!.path))),
-                    //
-                    // backgroundImage: picture == ""
-                    //     ? const AssetImage('assets/images/user1.png')
-                    //         as ImageProvider
-                    //     : NetworkImage(picture));
-
-                    //       backgroundImage: _photo == null
-                    //           ? NetworkImage(picture)
-                    //           : FileImage(File(_photo!.path)) as ImageProvider);
-                    // }),
-                    backgroundImage: choosePic());
+                return CircleAvatar(radius: 80.0, backgroundImage: choosePic());
               }),
           Positioned(
             bottom: 20.0,
             right: 20.0,
             child: InkWell(
               onTap: () {
+                //出現列表
                 showModalBottomSheet(
                   context: this.context,
                   builder: ((builder) => bottomSheet()),
@@ -229,6 +213,7 @@ class _UserSettingState extends State<UserSetting> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              //camer or gallery
               TextButton.icon(
                 icon: const Icon(Icons.camera),
                 onPressed: () {
@@ -254,6 +239,7 @@ class _UserSettingState extends State<UserSetting> {
     final pickedFile = await _picker.pickImage(
       source: source,
     );
+    // the picture in the gallery or camera store in _photo
     setState(() {
       if (pickedFile != null) {
         _photo = File(pickedFile.path);
@@ -266,19 +252,15 @@ class _UserSettingState extends State<UserSetting> {
   }
 
   choosePic() {
+    //沒upload，之前也沒換過照片
     if (picture == "" && _photo == null) {
       return const AssetImage('assets/images/user1.png');
     } else if (_photo == null) {
+      // 沒upload照片 從firebase store找之前的
       return NetworkImage(picture);
     } else {
+      //新upload到照片
       return FileImage(File(_photo!.path));
     }
   }
-  // choosePic() {
-  //   if (_photo == null) {
-  //     return NetworkImage(picture);
-  //   } else {
-  //     return FileImage(File(_photo!.path));
-  //   }
-  // }
 }
