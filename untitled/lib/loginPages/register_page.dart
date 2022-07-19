@@ -1,11 +1,7 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:untitled/widgets/widgets.dart';
 
 class RegisterPage extends StatefulWidget {
   final VoidCallback showLoginPage;
@@ -22,11 +18,8 @@ class _RegisterPageState extends State<RegisterPage> {
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
   final _ageController = TextEditingController();
-  final userEmail = FirebaseAuth.instance.currentUser?.email;
-  final useremail = FirebaseAuth.instance.currentUser?.email; //
-  final ImagePicker _picker = ImagePicker();
-  String picture = "";
-  File? _photo;
+  final userEmail = FirebaseAuth.instance.currentUser?.email; //
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -54,64 +47,6 @@ class _RegisterPageState extends State<RegisterPage> {
         _emailController.text.trim(),
         int.parse(_ageController.text.trim()),
       );
-    }
-  }
-
-  Widget imageProfile() {
-    return Center(
-      child: Stack(
-        children: <Widget>[
-          FutureBuilder(
-              future: findProfilePic(),
-              builder: (context, snapshot) {
-                return CircleAvatar(radius: 80.0, backgroundImage: choosePic());
-              }),
-          Positioned(
-            bottom: 20.0,
-            right: 20.0,
-            child: InkWell(
-              onTap: () {
-                //出現列表
-                showModalBottomSheet(
-                  context: this.context,
-                  builder: ((builder) => bottomSheet()),
-                );
-              },
-              child: const Icon(
-                Icons.camera_alt,
-                color: Colors.white,
-                size: 28.0,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future findProfilePic() async {
-    try {
-      await FirebaseFirestore.instance
-          .collection("users")
-          .doc(useremail)
-          .get()
-          .then((snapshot) => {picture = snapshot.data()!["profilePicURL"]});
-    } catch (e) {
-      // ignore: avoid_print
-      print(e.toString());
-    }
-  }
-
-  choosePic() {
-    //沒upload，之前也沒換過照片
-    if (picture == "" && _photo == null) {
-      return const AssetImage('assets/images/user1.png');
-    } else if (_photo == null) {
-      // 沒upload照片 從firebase store找之前的
-      return NetworkImage(picture);
-    } else {
-      //新upload到照片
-      return FileImage(File(_photo!.path));
     }
   }
 
@@ -160,19 +95,18 @@ class _RegisterPageState extends State<RegisterPage> {
                 Text(
                   'Welcome!',
                   style: GoogleFonts.bebasNeue(
-                    fontSize: 40,
+                    fontSize: 52,
                   ),
                 ),
-                SizedBox(height: 5),
+                SizedBox(height: 10),
                 Text(
                   'Register below with your details',
                   style: TextStyle(
-                    fontSize: 15,
+                    fontSize: 20,
                   ),
                 ),
-                SizedBox(height: 20),
-                imageProfile(),
-                SizedBox(height: 20),
+                SizedBox(height: 50),
+
                 //firstName textfield
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
@@ -360,65 +294,5 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
           ),
         )));
-  }
-
-  Widget bottomSheet() {
-    return Container(
-      height: 100.0,
-      width: MediaQuery.of(this.context).size.width,
-      margin: const EdgeInsets.symmetric(
-        horizontal: 20,
-        vertical: 20,
-      ),
-      child: Column(
-        children: <Widget>[
-          const Text(
-            "Choose Profile photo",
-            style: TextStyle(
-              fontSize: 20.0,
-            ),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              //camer or gallery
-              TextButton.icon(
-                icon: const Icon(Icons.camera),
-                onPressed: () {
-                  takePhoto(ImageSource.camera);
-                },
-                label: const Text("Camera"),
-              ),
-              TextButton.icon(
-                icon: const Icon(Icons.image),
-                onPressed: () {
-                  takePhoto(ImageSource.gallery);
-                },
-                label: const Text("Gallery"),
-              )
-            ],
-          )
-        ],
-      ),
-    );
-  }
-
-  void takePhoto(ImageSource source) async {
-    final pickedFile = await _picker.pickImage(
-      source: source,
-    );
-    // the picture in the gallery or camera store in _photo
-    setState(() {
-      if (pickedFile != null) {
-        _photo = File(pickedFile.path);
-        // uploadFile();
-      } else {
-        // ignore: avoid_print
-        print('No image selected');
-      }
-    });
   }
 }
