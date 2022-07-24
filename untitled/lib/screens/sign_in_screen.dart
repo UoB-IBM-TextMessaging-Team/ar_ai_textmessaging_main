@@ -1,3 +1,5 @@
+import 'package:google_fonts/google_fonts.dart';
+
 import '../app_theme.dart';
 import '../screens/screens.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -111,18 +113,18 @@ class _SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'CHATTER',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 17,
-          ),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.transparent,
-      ),
-      backgroundColor: Theme.of(context).cardColor,
+      // appBar: AppBar(
+      //   title: const Text(
+      //     'CHATTER',
+      //     style: TextStyle(
+      //       fontWeight: FontWeight.bold,
+      //       fontSize: 17,
+      //     ),
+      //   ),
+      //   centerTitle: true,
+      //   backgroundColor: Colors.deepPurple[200],
+      // ),
+      backgroundColor: Colors.grey[300],
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -132,41 +134,79 @@ class _SignInScreenState extends State<SignInScreen> {
                   key: _formKey,
                   child: Column(
                     children: [
-                      const Padding(
-                        padding: EdgeInsets.only(top: 24, bottom: 24),
-                        child: Text(
-                          'Welcome back',
-                          style: TextStyle(
-                              fontSize: 26, fontWeight: FontWeight.w800),
+                      SizedBox(height: 70),
+                      Icon(
+                        Icons.phone_android,
+                        size: 100,
+                        color: Colors.deepPurple[500],
+                      ),
+                      SizedBox(height: 40),
+                      Text(
+                        'Hello Again!',
+                        style: GoogleFonts.bebasNeue(
+                          fontSize: 52,
+                          color: Colors.black,
                         ),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: TextFormField(
-                          controller: _emailController,
-                          validator: _emailInputValidator,
-                          decoration: const InputDecoration(hintText: 'email'),
-                          keyboardType: TextInputType.emailAddress,
-                          autofillHints: const [AutofillHints.email],
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TextFormField(
-                          controller: _passwordController,
-                          validator: _passwordInputValidator,
-                          decoration: const InputDecoration(
-                            hintText: 'password',
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey[200],
+                            border: Border.all(color: Colors.white),
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                          obscureText: true,
-                          enableSuggestions: false,
-                          autocorrect: false,
-                          keyboardType: TextInputType.visiblePassword,
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 20.0),
+                            child: TextFormField(
+                              controller: _emailController,
+                              validator: _emailInputValidator,
+                              decoration: const InputDecoration(
+                                  hintStyle: TextStyle(
+                                      fontSize: 20.0, color: Colors.grey),
+                                  hintText: 'Email',
+                                  border: InputBorder.none),
+                              keyboardType: TextInputType.emailAddress,
+                              autofillHints: const [AutofillHints.email],
+                            ),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey[200],
+                            border: Border.all(color: Colors.white),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 20.0),
+                            child: TextFormField(
+                              controller: _passwordController,
+                              validator: _passwordInputValidator,
+                              decoration: const InputDecoration(
+                                hintText: 'Password',
+                                border: InputBorder.none,
+                                hintStyle: TextStyle(
+                                    fontSize: 20.0, color: Colors.grey),
+                              ),
+                              obscureText: true,
+                              enableSuggestions: false,
+                              autocorrect: false,
+                              keyboardType: TextInputType.visiblePassword,
+                            ),
+                          ),
                         ),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.deepPurple, // background
+                            onPrimary: Colors.white, // foreground
+                            fixedSize: Size(120, 20),
+                          ),
                           onPressed: _signIn,
                           child: const Text(
                             'Sign in',
@@ -178,14 +218,24 @@ class _SignInScreenState extends State<SignInScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text('Already have an account?',
-                              style: Theme.of(context).textTheme.subtitle2),
+                          Text(
+                            'Already have an account?',
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold),
+                            // style: Theme.of(context).textTheme.subtitle2,
+                          ),
                           const SizedBox(width: 8),
                           TextButton(
                             onPressed: () {
                               Navigator.of(context).push(SignUpScreen.route);
                             },
-                            child: const Text('Create account'),
+                            child: const Text(
+                              'Create account',
+                              style: TextStyle(
+                                  color: Colors.blue,
+                                  fontWeight: FontWeight.bold),
+                            ),
                           ),
                         ],
                       ),

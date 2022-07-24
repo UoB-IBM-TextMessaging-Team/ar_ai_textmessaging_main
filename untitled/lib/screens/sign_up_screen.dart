@@ -452,19 +452,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[300],
+
       appBar: AppBar(
         title: const Text(
-          'CHATTER',
+          'Sign Up',
           style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 17,
-          ),
+              fontWeight: FontWeight.bold, fontSize: 28, color: Colors.white),
         ),
         centerTitle: true,
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.deepPurple[200],
         elevation: 0,
       ),
-      backgroundColor: Theme.of(context).cardColor,
+      // backgroundColor: Theme.of(context).cardColor,
       body: (_loading)
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -475,6 +475,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      SizedBox(height: 20),
                       imageProfile(),
 
                       /*const Padding(
@@ -485,48 +486,96 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               fontSize: 26, fontWeight: FontWeight.w800),
                         ),
                       ), */
+                      SizedBox(height: 20),
+                      Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              border: Border.all(color: Colors.white),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 20.0),
+                              child: TextFormField(
+                                controller: _nameController,
+                                validator: _nameInputValidator,
+                                decoration: const InputDecoration(
+                                    hintStyle: TextStyle(
+                                        fontSize: 20.0, color: Colors.grey),
+                                    hintText: 'Name',
+                                    border: InputBorder.none),
+                                keyboardType: TextInputType.name,
+                                autofillHints: const [
+                                  AutofillHints.name,
+                                  AutofillHints.username
+                                ],
+                              ),
+                            ),
+                          )),
+                      Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              border: Border.all(color: Colors.white),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 20.0),
+                              child: TextFormField(
+                                controller: _emailController,
+                                validator: _emailInputValidator,
+                                decoration: const InputDecoration(
+                                    hintStyle: TextStyle(
+                                        fontSize: 20.0, color: Colors.grey),
+                                    hintText: 'Email',
+                                    border: InputBorder.none),
+                                keyboardType: TextInputType.emailAddress,
+                                autofillHints: const [AutofillHints.email],
+                              ),
+                            ),
+                          )),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: TextFormField(
-                          controller: _nameController,
-                          validator: _nameInputValidator,
-                          decoration: const InputDecoration(hintText: 'name'),
-                          keyboardType: TextInputType.name,
-                          autofillHints: const [
-                            AutofillHints.name,
-                            AutofillHints.username
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TextFormField(
-                          controller: _emailController,
-                          validator: _emailInputValidator,
-                          decoration: const InputDecoration(hintText: 'email'),
-                          keyboardType: TextInputType.emailAddress,
-                          autofillHints: const [AutofillHints.email],
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TextFormField(
-                          controller: _passwordController,
-                          validator: _passwordInputValidator,
-                          decoration: const InputDecoration(
-                            hintText: 'password',
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey[200],
+                            border: Border.all(color: Colors.white),
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                          obscureText: true,
-                          enableSuggestions: false,
-                          autocorrect: false,
-                          keyboardType: TextInputType.visiblePassword,
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 20.0),
+                            child: TextFormField(
+                              controller: _passwordController,
+                              validator: _passwordInputValidator,
+                              decoration: const InputDecoration(
+                                hintText: 'password',
+                                border: InputBorder.none,
+                                hintStyle: TextStyle(
+                                    fontSize: 20.0, color: Colors.grey),
+                              ),
+                              obscureText: true,
+                              enableSuggestions: false,
+                              autocorrect: false,
+                              keyboardType: TextInputType.visiblePassword,
+                            ),
+                          ),
                         ),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.deepPurple, // background
+                            onPrimary: Colors.white, // foreground
+                            fixedSize: Size(120, 20),
+                          ),
                           onPressed: _signUp,
-                          child: const Text('Sign up'),
+                          child: const Text(
+                            'Sign up',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
                         ),
                       ),
                       const Padding(
@@ -536,14 +585,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text('Already have an account?',
-                              style: Theme.of(context).textTheme.subtitle2),
-                          const SizedBox(width: 8),
+                          Text(
+                            'Already have an account?',
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold),
+                            // style: Theme.of(context).textTheme.subtitle2),
+                          ),
                           TextButton(
                             onPressed: () {
                               Navigator.of(context).pop();
                             },
-                            child: const Text('Sign in'),
+                            child: const Text(
+                              'Sign in',
+                              style: TextStyle(
+                                  color: Colors.blue,
+                                  fontWeight: FontWeight.bold),
+                            ),
                           ),
                         ],
                       ),

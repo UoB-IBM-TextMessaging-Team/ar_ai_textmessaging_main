@@ -89,9 +89,10 @@ class FriendProfile extends StatelessWidget {
                               borderRadius: borderRadius,
                               child: SizedBox.fromSize(
                                 size: Size.fromRadius(32),
-                                child: Image.asset(
+                                child: Image.network(
                                   Helpers.getChannelImage(
-                                      channel, context.currentUser!) ?? 'assets/images/image0.png',
+                                          channel, context.currentUser!) ??
+                                      'assets/images/image0.png',
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -128,7 +129,7 @@ class FriendProfile extends StatelessWidget {
                   },
                   child: GestureDetector(
                     onTap: () {
-                      Navigator.of(context).pop(); 
+                      Navigator.of(context).pop();
                     },
                     child: Container(
                       padding: const EdgeInsets.all(12),
