@@ -6,7 +6,7 @@ abstract class Helpers {
   static final random = Random();
 
   static String randomPictureUrl() {
-    final randomInt = random.nextInt(5);
+    final randomInt = random.nextInt(7);
     return 'assets/images/user$randomInt.png';
   }
 
@@ -53,4 +53,6 @@ abstract class Helpers {
       return null;
     }
   }
+
+
 }

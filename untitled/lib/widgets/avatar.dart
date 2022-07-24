@@ -1,5 +1,6 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+
+import '../models/models.dart';
 
 class Avatar extends StatelessWidget {
   const Avatar({
@@ -46,7 +47,7 @@ class Avatar extends StatelessWidget {
     if (url != null) {
       return CircleAvatar(
         radius: radius,
-        backgroundImage: ExactAssetImage(url!),
+        backgroundImage: NetworkImage(url!),
         backgroundColor: Theme.of(context).cardColor,
       );
     } else {
@@ -64,3 +65,22 @@ class Avatar extends StatelessWidget {
   }
 }
 
+class boxAvatar extends StatelessWidget {
+  boxAvatar($, {Key? key, required this.messageData}) : super(key: key);
+  final BorderRadius borderRadius = BorderRadius.circular(20);
+  final MessageData messageData;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: borderRadius,
+      child: SizedBox.fromSize(
+        size: Size.fromRadius(32),
+        child: Image.asset(
+          messageData.profilePicture,
+          fit: BoxFit.cover,
+        ),
+      ),
+    );
+  }
+}

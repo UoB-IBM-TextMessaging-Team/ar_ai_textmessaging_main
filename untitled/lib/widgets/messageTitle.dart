@@ -1,26 +1,28 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:untitled/app_theme.dart';
-import 'package:untitled/models/models.dart';
-import 'package:untitled/screens/screens.dart';
-import 'package:untitled/theme.dart';
-import 'package:untitled/widgets/widgets.dart';
+import 'package:jiffy/jiffy.dart';
+import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
+import '../app.dart';
+import '../app_theme.dart';
+import '../helpers.dart';
+import '../screens/screens.dart';
+import '../theme.dart';
+import '../widgets/widgets.dart';
 
 
 
 class MessageTitle extends StatelessWidget {
   const MessageTitle({
     Key? key,
-    required this.messageData,
+    required this.channel,
   }) : super(key: key);
 
-  final MessageData messageData;
+  final Channel channel;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        Navigator.of(context).push(ChateScreen.route(messageData));
+        Navigator.of(context).push(ChateScreen.routeWithChannel(channel));
       },
       child: Container(
         // message bar height
@@ -47,7 +49,7 @@ class MessageTitle extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(
                     left: 10, right: 10, top: 10, bottom: 10),
-                child: Avatar.medium(url: messageData.profilePicture),
+                child: Avatar.medium(url: Helpers.getChannelImage(channel, context.currentUser!)),
               ),
 
               // User name + message
@@ -59,7 +61,7 @@ class MessageTitle extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
                       child: Text(
-                        messageData.senderName,
+                        Helpers.getChannelName(channel, context.currentUser!),
                         overflow: TextOverflow
                             .ellipsis, // overflow text will be ellipsis in the end ....
                         style: MyTheme.senderName,
@@ -67,11 +69,7 @@ class MessageTitle extends StatelessWidget {
                     ),
                     SizedBox(
                       height: 20,
-                      child: Text(
-                        messageData.message,
-                        overflow: TextOverflow.ellipsis,
-                        style: MyTheme.textPreview,
-                      ),
+                      child: _buildLastMessage(),
                     ),
                   ],
                 ),
@@ -85,28 +83,17 @@ class MessageTitle extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     const SizedBox(height: 4),
-                    Container(
-                      width: 18,
-                      height: 18,
-                      decoration: const BoxDecoration(
-                        color: AppColors.secondary,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Center(
-                        child: Text(
-                          '1',
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: AppColors.textLight,
-                          ),
-                        ),
-                      ),
+                    Center(
+                      child: UnreadIndicator(channel: channel),
+
                     ),
                     const SizedBox(height: 10.0),
-                    Text(
-                      messageData.dateMessage.toUpperCase(),
+                    _buildLastMessageAt(),
+                    /*Text(
+                      '12',
+                      //messageData.dateMessage.toUpperCase(),
                       style: MyTheme.textTime,
-                    ),
+                    ), */
                   ],
                 ),
               ),
@@ -114,6 +101,72 @@ class MessageTitle extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+
+  Widget _buildLastMessage() {
+    return BetterStreamBuilder<int>(
+      stream: channel.state!.unreadCountStream,
+      initialData: channel.state?.unreadCount ?? 0,
+      builder: (context, count) {
+        return BetterStreamBuilder<Message>(
+          stream: channel.state!.lastMessageStream,
+          initialData: channel.state!.lastMessage,
+          builder: (context, lastMessage) {
+            return Text(
+              lastMessage.text ?? '',
+              overflow: TextOverflow.ellipsis,
+              style: (count > 0)
+                  ? const TextStyle(
+                      fontSize: 12,
+                      color: AppColors.secondary,
+                    )
+                  : const TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textFaded,
+                    ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildLastMessageAt() {
+    return BetterStreamBuilder<DateTime>(
+      stream: channel.lastMessageAtStream,
+      initialData: channel.lastMessageAt,
+      builder: (context, data) {
+        final lastMessageAt = data.toLocal();
+        String stringDate;
+        final now = DateTime.now();
+
+        final startOfDay = DateTime(now.year, now.month, now.day);
+
+        if (lastMessageAt.millisecondsSinceEpoch >=
+            startOfDay.millisecondsSinceEpoch) {
+          stringDate = Jiffy(lastMessageAt.toLocal()).jm;
+        } else if (lastMessageAt.millisecondsSinceEpoch >=
+            startOfDay
+                .subtract(const Duration(days: 1))
+                .millisecondsSinceEpoch) {
+          stringDate = 'YESTERDAY';
+        } else if (startOfDay.difference(lastMessageAt).inDays < 7) {
+          stringDate = Jiffy(lastMessageAt.toLocal()).EEEE;
+        } else {
+          stringDate = Jiffy(lastMessageAt.toLocal()).yMd;
+        }
+        return Text(
+          stringDate,
+          style: const TextStyle(
+            fontSize: 11,
+            letterSpacing: -0.2,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textFaded,
+          ),
+        );
+      },
     );
   }
 }

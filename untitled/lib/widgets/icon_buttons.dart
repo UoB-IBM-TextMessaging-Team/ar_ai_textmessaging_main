@@ -69,9 +69,6 @@ class IconPure extends StatelessWidget {
   }
 }
 
-
-
-
 class IconBorder extends StatelessWidget {
   const IconBorder({
     Key? key,

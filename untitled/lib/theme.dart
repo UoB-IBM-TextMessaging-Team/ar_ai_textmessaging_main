@@ -6,7 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 abstract class AppColors {
   static const secondary = Color.fromARGB(255, 131, 155, 210);
-  static const accent = Color.fromARGB(255, 154, 91, 214);
+  static const accent = Color.fromARGB(255, 179, 197, 216);
   static const textDark = Color(0xFF53585A);
   static const textLight = Color(0xFFF5F5F5);
   static const textFaded = Color(0xFF9899A5);
@@ -54,6 +54,7 @@ class AppTheme {
           titleTextStyle: TextStyle(color: AppColors.textDark),
           elevation: 0,
           systemOverlayStyle: SystemUiOverlayStyle.dark,
+          iconTheme: IconThemeData(color: AppColors.cardDark),
         ),
       );
 
@@ -78,6 +79,7 @@ class AppTheme {
           titleTextStyle: TextStyle(color: AppColors.textLight),
           elevation: 0,
           systemOverlayStyle: SystemUiOverlayStyle.light,
+          iconTheme: IconThemeData(color: AppColors.cardLight),
         ),
       );
 }

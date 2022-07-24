@@ -57,4 +57,17 @@ class MyTheme {
     fontWeight: FontWeight.bold,
     fontSize: 14,
   );
+
+  static final TextStyle buttonText = TextStyle(
+    fontWeight: FontWeight.bold,
+    fontSize: 16,
+    color: Colors.white,
+    letterSpacing: 0.5,
+  );
+
+  static final TextStyle searchText = TextStyle(
+    fontWeight: FontWeight.w600,
+    letterSpacing: 1,
+    color: AppColors.textFaded,
+  );
 }

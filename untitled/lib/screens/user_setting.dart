@@ -1,9 +1,16 @@
+// import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:untitled/app.dart';
+// import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+// import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserSetting extends StatefulWidget {
   const UserSetting({Key? key}) : super(key: key);
@@ -15,17 +22,22 @@ class UserSetting extends StatefulWidget {
 }
 
 class _UserSettingState extends State<UserSetting> {
-  final user = FirebaseAuth.instance.currentUser?.email;
-  final useremail = FirebaseAuth.instance.currentUser?.email;
-
   File? _photo;
   final ImagePicker _picker = ImagePicker();
-  firebase_storage.FirebaseStorage storage =
-      firebase_storage.FirebaseStorage.instance;
   String picture =
       ""; // picture in the firebase store (defalut: picture is empty)
   bool change = false;
+  final useremail = FirebaseAuth.instance.currentUser?.email;
+  final user = FirebaseAuth.instance.currentUser?.email;
   //find the picture in the firebase store
+  // Future findProfilePic() async {
+  //   try {
+  //     picture = context.currentUserImage!;
+  //   } catch (e) {
+  //     // ignore: avoid_print
+  //     print(e.toString());
+  //   }
+  // }
   Future findProfilePic() async {
     try {
       await FirebaseFirestore.instance
@@ -49,7 +61,7 @@ class _UserSettingState extends State<UserSetting> {
   //upload picture to the firebase store and storage
   Future uploadFile() async {
     if (_photo == null) return;
-    final destination = 'username/$user';
+    final destination = 'profilePicture/$user';
 
     try {
       final ref = firebase_storage.FirebaseStorage.instance
@@ -78,11 +90,12 @@ class _UserSettingState extends State<UserSetting> {
 
   @override
   Widget build(BuildContext context) {
+    final userImage = context.currentUserImage;
     return Scaffold(
       backgroundColor: Theme.of(context).cardColor,
       appBar: AppBar(
         title: const Text(
-          "User setting",
+          "User Setting",
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 20,
@@ -243,7 +256,6 @@ class _UserSettingState extends State<UserSetting> {
     setState(() {
       if (pickedFile != null) {
         _photo = File(pickedFile.path);
-        // uploadFile();
       } else {
         // ignore: avoid_print
         print('No image selected');

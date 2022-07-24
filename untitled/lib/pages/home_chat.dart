@@ -2,50 +2,79 @@ import 'package:faker/faker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:jiffy/jiffy.dart';
-import 'package:untitled/app_theme.dart';
+import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
+
 import 'package:untitled/models/models.dart';
 import 'package:untitled/helpers.dart';
-import 'package:untitled/screens/screens.dart';
-import 'package:untitled/theme.dart';
+
 import 'package:untitled/widgets/widgets.dart';
 
-class HomeChat extends StatelessWidget {
+class HomeChat extends StatefulWidget {
   const HomeChat({Key? key}) : super(key: key);
 
   @override
+  State<HomeChat> createState() => _HomeChatState();
+}
+
+class _HomeChatState extends State<HomeChat> {
+
+  final channelListController = ChannelListController();
+
+  @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).unfocus();
-      },
-      child: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: Column(
-              children: const [
-                SizedBox(height: 18),
-                Searcher(),
-              ],
-            ),
-          ),
-          SliverList(
-            delegate: SliverChildBuilderDelegate(_delegate),
-          ),
+    return ChannelsBloc(
+      child: ChannelListCore(
+      channelListController: channelListController,
+      filter: Filter.and(
+        [
+          Filter.equal('type', 'messaging'),
+          Filter.in_('members', [
+            StreamChatCore.of(context).currentUser!.id,
+          ])
         ],
       ),
-    );
-  }
-
-  Widget _delegate(BuildContext context, int index) {
-    final Faker faker = Faker();
-    final date = Helpers.randomDate();
-    return MessageTitle(
-      messageData: MessageData(
-          senderName: faker.person.name(),
-          message: faker.lorem.sentence(),
-          messageDate: date,
-          dateMessage: Jiffy(date).fromNow(),
-          profilePicture: Helpers.randomPictureUrl()),
+        emptyBuilder: (context) => const Center(
+          child: Text(
+            'So empty.\nGo and message someone.',
+            textAlign: TextAlign.center,
+          ),
+        ),
+        errorBuilder: (context, error) => DisplayErrorMessage(
+          error: error,
+        ),
+        loadingBuilder: (
+          context,
+        ) =>
+            const Center(
+          child: SizedBox(
+            height: 100,
+            width: 100,
+            child: CircularProgressIndicator(),
+          ),
+        ),
+        listBuilder: (context, channels) {
+          return CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: Column(
+                children: const [
+                    SizedBox(height: 18),
+                    Searcher(),
+                  ],
+                ),
+              ),
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    return MessageTitle(channel: channels[index],);
+                  },
+                  childCount: channels.length,
+                ),
+              )
+            ],
+          );
+        },
+      ),
     );
   }
 }

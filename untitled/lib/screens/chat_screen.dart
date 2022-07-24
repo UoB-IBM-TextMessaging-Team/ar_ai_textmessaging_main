@@ -1,82 +1,112 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
+import 'package:untitled/app.dart';
 import 'package:untitled/app_theme.dart';
-import 'package:untitled/models/models.dart';
 import 'package:untitled/theme.dart';
 import 'package:untitled/widgets/widgets.dart';
 
-class ChateScreen extends StatelessWidget {
-  static Route route(MessageData data) => MaterialPageRoute(
-        builder: (context) => ChateScreen(
-          messageData: data,
+class ChateScreen extends StatefulWidget {
+  static Route routeWithChannel(Channel channel) => MaterialPageRoute(
+        builder: (context) => StreamChannel(
+          channel: channel,
+          child: const ChateScreen(),
         ),
       );
 
   const ChateScreen({
     Key? key,
-    required this.messageData,
   }) : super(key: key);
 
-  final MessageData messageData;
+  @override
+  State<ChateScreen> createState() => _ChateScreenState();
+}
+
+class _ChateScreenState extends State<ChateScreen> {
+  late StreamSubscription<int> unreadCountSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+
+    unreadCountSubscription = StreamChannel.of(context)
+        .channel
+        .state!
+        .unreadCountStream
+        .listen(_unreadCountHandler);
+  }
+
+  Future<void> _unreadCountHandler(int count) async {
+    if (count > 0) {
+      await StreamChannel.of(context).channel.markRead();
+    }
+  }
+
+  @override
+  void dispose() {
+    unreadCountSubscription.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        image: DecorationImage(
-          image: ExactAssetImage('assets/images/image1.jpg'),
-          opacity: 0.9,
-          fit: BoxFit.cover,
-        ),
-      ),
-      child: Scaffold(
-        //extendBodyBehindAppBar: true,
-        backgroundColor: Colors
-            .transparent, // Make AppBar transparent and show background image which is set to whole screen <====
-        // app bar
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).backgroundColor.withOpacity(0),
-          iconTheme: Theme.of(context).iconTheme,
-          centerTitle: false,
-          title: AppBarTitle(messageData: messageData),
-          leading: Padding(
-            padding: const EdgeInsets.only(left: 16),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: IconBackground(
-                icon: CupertinoIcons.back,
-                onTap: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ),
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: ExactAssetImage('assets/images/image1.jpg'),
+            opacity: 0.9,
+            fit: BoxFit.cover,
           ),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Center(
+        ),
+        child: Scaffold(
+          //extendBodyBehindAppBar: true,
+          backgroundColor: Colors
+              .transparent, // Make AppBar transparent and show background image which is set to whole screen <====
+          // app bar
+          appBar: AppBar(
+            backgroundColor: Theme.of(context).backgroundColor.withOpacity(0),
+            iconTheme: Theme.of(context).iconTheme,
+            centerTitle: false,
+            title: const AppBarTitle(),
+            leading: Padding(
+              padding: const EdgeInsets.only(left: 16),
+              child: Align(
+                alignment: Alignment.centerLeft,
                 child: IconBackground(
-                    icon: Icons.more_vert,
-                    onTap: () {
-                      print('Check More.');
-                    }),
+                  icon: CupertinoIcons.back,
+                  onTap: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
               ),
             ),
-          ],
-        ),
-
-        // body
-        body: GestureDetector(
-          onTap: () {
-            FocusScope.of(context).unfocus();
-          },
-          child: Padding(
+            actions: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Center(
+                  child: IconBackground(
+                      icon: Icons.more_vert,
+                      onTap: () {
+                        print('Check More.');
+                      }),
+                ),
+              ),
+            ],
+          ),
+    
+          // body
+          body: Padding(
             padding: const EdgeInsets.only(top: 200),
             child: Container(
               decoration: BoxDecoration(
-                color: Theme.of(context).cardColor.withOpacity(0), // 首页列表背景色 <=========
+                color: Theme.of(context)
+                    .cardColor
+                    .withOpacity(0), // 首页列表背景色 <=========
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(50),
                   topRight: Radius.circular(50),
@@ -88,11 +118,21 @@ class ChateScreen extends StatelessWidget {
                   topRight: Radius.circular(50),
                 ),
                 child: Column(
-                  children: const [
+                  children: [
                     Expanded(
-                      child: _DemoMessageList(),
+                      child: MessageListCore(
+                        loadingBuilder: (context) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        },
+                        emptyBuilder: (context) => const SizedBox.shrink(),
+                        errorBuilder: (context, error) =>
+                            DisplayErrorMessage(error: error),
+                        messageListBuilder: (context, messages) =>
+                            _MessageList(messages: messages),
+                      ),
                     ),
-                    _ActionBar(),
+                    const _ActionBar(),
                   ],
                 ),
               ),
@@ -112,37 +152,102 @@ class ChateScreen extends StatelessWidget {
             fit: BoxFit.cover,
           ),
         ),) */
+class _MessageList extends StatelessWidget {
+  const _MessageList({
+    Key? key,
+    required this.messages,
+  }) : super(key: key);
 
-class _DemoMessageList extends StatelessWidget {
-  const _DemoMessageList({Key? key}) : super(key: key);
+  final List<Message> messages;
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: const [
-        _DataLabel(label: 'Yesterday'),
-        _MessageOwnTile(message: 'You know how it goes????'),
-        _MessageTile(message: 'Hi, Anna! How\'s your day going? '),
-        _MessageOwnTile(message: 'Hi, Anna! How\'s your day going? '),
-        _MessageTile(message: 'Hi, Anna! How\'s your day going?'),
-        _MessageOwnTile(message: 'You know how it goes????'),
-        _MessageTile(message: 'Hi, Anna! How\'s your day going?'),
-        _MessageOwnTile(message: 'You know how it goes????'),
-        _MessageTile(message: 'Hi, Anna! How\'s your day going?'),
-        _MessageOwnTile(message: 'You know how it goes????'),
-        _MessageTile(message: 'Hi, Anna! How\'s your day going? '),
-      ],
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: ListView.separated(
+        itemCount: messages.length + 1,
+        reverse: true,
+        separatorBuilder: (context, index) {
+          if (index == messages.length - 1) {
+            return _DateLabel(dateTime: messages[index].createdAt);
+          }
+          if (messages.length == 1) {
+            return const SizedBox.shrink();
+          } else if (index >= messages.length - 1) {
+            return const SizedBox.shrink();
+          } else if (index <= messages.length) {
+            final message = messages[index];
+            final nextMessage = messages[index + 1];
+            if (!Jiffy(message.createdAt.toLocal())
+                .isSame(nextMessage.createdAt.toLocal(), Units.DAY)) {
+              return _DateLabel(
+                dateTime: message.createdAt,
+              );
+            } else {
+              return const SizedBox.shrink();
+            }
+          } else {
+            return const SizedBox.shrink();
+          }
+        },
+        itemBuilder: (context, index) {
+          if (index < messages.length) {
+            final message = messages[index];
+            if (message.user?.id == context.currentUser?.id) {
+              return _MessageOwnTile(message: message);
+            } else {
+              return _MessageTile(message: message);
+            }
+          } else {
+            return const SizedBox.shrink();
+          }
+        },
+      ),
     );
   }
 }
 
-class _DataLabel extends StatelessWidget {
-  const _DataLabel({
+class _DateLabel extends StatefulWidget {
+  const _DateLabel({
     Key? key,
-    required this.label,
+    required this.dateTime,
   }) : super(key: key);
 
-  final String label;
+  final DateTime dateTime;
+
+  @override
+  State<_DateLabel> createState() => _DateLabelState();
+}
+
+class _DateLabelState extends State<_DateLabel> {
+  late String dayInfo;
+
+  @override
+  void initState() {
+    final createdAt = Jiffy(widget.dateTime);
+    final now = DateTime.now();
+
+    if (Jiffy(createdAt).isSame(now, Units.DAY)) {
+      dayInfo = 'TODAY';
+    } else if (Jiffy(createdAt)
+        .isSame(now.subtract(const Duration(days: 1)), Units.DAY)) {
+      dayInfo = 'YESTERDAY';
+    } else if (Jiffy(createdAt).isAfter(
+      now.subtract(const Duration(days: 7)),
+      Units.DAY,
+    )) {
+      dayInfo = createdAt.EEEE;
+    } else if (Jiffy(createdAt).isAfter(
+      Jiffy(now).subtract(years: 1),
+      Units.DAY,
+    )) {
+      dayInfo = createdAt.MMMd;
+    } else {
+      dayInfo = createdAt.MMMd;
+    }
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -159,7 +264,7 @@ class _DataLabel extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12),
             child: Text(
-              label,
+              dayInfo,
               style: const TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
@@ -179,7 +284,7 @@ class _MessageOwnTile extends StatelessWidget {
     required this.message,
   }) : super(key: key);
 
-  final String message;
+  final Message message;
 
   static const _borderRadius = 18.0;
 
@@ -208,7 +313,7 @@ class _MessageOwnTile extends StatelessWidget {
                 ),
               ),
               child: Text(
-                message,
+                message.text ?? '',
                 style: MyTheme.bodyTextMessage,
               ),
             ),
@@ -225,7 +330,7 @@ class _MessageTile extends StatelessWidget {
     required this.message,
   }) : super(key: key);
 
-  final String message;
+  final Message message;
 
   static const _borderRadius = 18.0;
 
@@ -255,7 +360,7 @@ class _MessageTile extends StatelessWidget {
                 ),
               ),
               child: Text(
-                message,
+                message.text ?? '',
                 style: MyTheme.bodyTextMessage,
               ),
             )
@@ -266,8 +371,31 @@ class _MessageTile extends StatelessWidget {
   }
 }
 
-class _ActionBar extends StatelessWidget {
+class _ActionBar extends StatefulWidget {
   const _ActionBar({Key? key}) : super(key: key);
+
+  @override
+  State<_ActionBar> createState() => _ActionBarState();
+}
+
+class _ActionBarState extends State<_ActionBar> {
+  final TextEditingController controller = TextEditingController();
+
+  Future<void> _sendMessage() async {
+    if (controller.text.isNotEmpty) {
+      StreamChannel.of(context)
+          .channel
+          .sendMessage(Message(text: controller.text));
+      controller.clear();
+      FocusScope.of(context).unfocus();
+    }
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -303,15 +431,20 @@ class _ActionBar extends StatelessWidget {
                       color: Colors.grey[500],
                     ),
                     const SizedBox(width: 10),
-                    const Expanded(
+                    Expanded(
                       child: Padding(
                         padding: EdgeInsets.only(bottom: 5),
                         child: TextField(
-                          decoration: InputDecoration(
+                          controller: controller,
+                          onChanged: (val) {
+                            StreamChannel.of(context).channel.keyStroke();
+                          },
+                          decoration: const InputDecoration(
                             border: InputBorder.none,
                             //hintText: 'Type your message here ...',
                             //hintStyle: TextStyle(color: Colors.grey[500], fontWeight: FontWeight.bold),
                           ),
+                          onSubmitted: (_) => _sendMessage(),
                         ),
                       ),
                     ),
@@ -324,12 +457,15 @@ class _ActionBar extends StatelessWidget {
                 ),
               ),
             ),
-            CircleAvatar(
-              backgroundColor: Theme.of(context).cardColor,
-              child: const Padding(
-                padding: EdgeInsets.only(left: 2, bottom: 2),
-                child: Icon(
-                  CupertinoIcons.viewfinder,
+            GestureDetector(
+              onTap: _sendMessage,
+              child: CircleAvatar(
+                backgroundColor: Theme.of(context).cardColor,
+                child: const Padding(
+                  padding: EdgeInsets.only(left: 2, bottom: 2),
+                  child: Icon(
+                    CupertinoIcons.viewfinder,
+                  ),
                 ),
               ),
             ),
