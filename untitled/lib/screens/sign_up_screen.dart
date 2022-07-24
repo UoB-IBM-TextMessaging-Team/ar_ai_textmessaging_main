@@ -498,6 +498,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             child: Padding(
                               padding: const EdgeInsets.only(left: 20.0),
                               child: TextFormField(
+                                style: TextStyle(color: Colors.black),
                                 controller: _nameController,
                                 validator: _nameInputValidator,
                                 decoration: const InputDecoration(
@@ -524,6 +525,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             child: Padding(
                               padding: const EdgeInsets.only(left: 20.0),
                               child: TextFormField(
+                                style: TextStyle(color: Colors.black),
                                 controller: _emailController,
                                 validator: _emailInputValidator,
                                 decoration: const InputDecoration(
@@ -547,6 +549,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           child: Padding(
                             padding: const EdgeInsets.only(left: 20.0),
                             child: TextFormField(
+                              style: TextStyle(color: Colors.black),
                               controller: _passwordController,
                               validator: _passwordInputValidator,
                               decoration: const InputDecoration(
