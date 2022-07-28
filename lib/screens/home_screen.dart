@@ -3,11 +3,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../app.dart';
-import 'package:untitled/app_theme.dart';
-import 'package:untitled/pages/pages.dart';
+import 'package:ar_ai_messaging_client_frontend/app_theme.dart';
+import 'package:ar_ai_messaging_client_frontend/pages/pages.dart';
 import 'package:floating_bottom_navigation_bar/floating_bottom_navigation_bar.dart';
-import 'package:untitled/screens/screens.dart';
-import 'package:untitled/widgets/widgets.dart';
+import 'package:ar_ai_messaging_client_frontend/screens/screens.dart';
+import 'package:ar_ai_messaging_client_frontend/widgets/widgets.dart';
 import 'package:flutter/services.dart';
 
 class HomePage extends StatefulWidget {

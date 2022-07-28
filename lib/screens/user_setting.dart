@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:untitled/app.dart';
+import 'package:ar_ai_messaging_client_frontend/app.dart';
 // import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 // import 'package:cloud_firestore/cloud_firestore.dart';
 

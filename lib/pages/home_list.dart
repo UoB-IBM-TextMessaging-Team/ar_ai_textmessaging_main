@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
-import 'package:untitled/app.dart';
+import 'package:ar_ai_messaging_client_frontend/app.dart';
 import '../screens/screens.dart';
 import '../widgets/widgets.dart';
 

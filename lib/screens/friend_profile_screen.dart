@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
-import 'package:untitled/app.dart';
-import 'package:untitled/app_theme.dart';
+import 'package:ar_ai_messaging_client_frontend/app.dart';
+import 'package:ar_ai_messaging_client_frontend/app_theme.dart';
 import '../helpers.dart';
 import '../widgets/widgets.dart';
 import '../screens/screens.dart';

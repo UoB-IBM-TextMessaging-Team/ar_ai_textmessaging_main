@@ -4,10 +4,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
-import 'package:untitled/app.dart';
-import 'package:untitled/app_theme.dart';
-import 'package:untitled/theme.dart';
-import 'package:untitled/widgets/widgets.dart';
+import 'package:ar_ai_messaging_client_frontend/app.dart';
+import 'package:ar_ai_messaging_client_frontend/app_theme.dart';
+import 'package:ar_ai_messaging_client_frontend/theme.dart';
+import 'package:ar_ai_messaging_client_frontend/widgets/widgets.dart';
 
 class ChateScreen extends StatefulWidget {
   static Route routeWithChannel(Channel channel) => MaterialPageRoute(

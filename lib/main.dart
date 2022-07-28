@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
-import 'package:untitled/app.dart';
-import 'package:untitled/screens/screens.dart';
-import 'package:untitled/theme.dart';
+import 'package:ar_ai_messaging_client_frontend/app.dart';
+import 'package:ar_ai_messaging_client_frontend/screens/screens.dart';
+import 'package:ar_ai_messaging_client_frontend/theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 Future main() async {
@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
-      themeMode: ThemeMode.dark,
+      //themeMode: ThemeMode.dark,
       debugShowCheckedModeBanner: false,
       builder: (context, child) {
         return StreamChatCore(

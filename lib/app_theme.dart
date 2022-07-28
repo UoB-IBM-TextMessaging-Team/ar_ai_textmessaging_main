@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:untitled/theme.dart';
+import 'package:ar_ai_messaging_client_frontend/theme.dart';
 
 class MyTheme {
   MyTheme._();

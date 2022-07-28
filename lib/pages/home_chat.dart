@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
 
-import 'package:untitled/models/models.dart';
-import 'package:untitled/helpers.dart';
+import 'package:ar_ai_messaging_client_frontend/models/models.dart';
+import 'package:ar_ai_messaging_client_frontend/helpers.dart';
 
-import 'package:untitled/widgets/widgets.dart';
+import 'package:ar_ai_messaging_client_frontend/widgets/widgets.dart';
 
 class HomeChat extends StatefulWidget {
   const HomeChat({Key? key}) : super(key: key);
