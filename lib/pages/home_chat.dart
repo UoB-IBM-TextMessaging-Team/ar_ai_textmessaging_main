@@ -60,9 +60,7 @@ class _HomeChatState extends State<HomeChat> {
                 children: [
                     SizedBox(height: 18),
                     Searcher(onEnterPress: (String s) {
-                      if(s.isNotEmpty){
-                        print("Enter:$s");
-                      }
+                      //TODO
                     }),
                   ],
                 ),

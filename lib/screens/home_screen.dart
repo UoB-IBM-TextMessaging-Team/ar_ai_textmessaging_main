@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart' as core;
 import '../app.dart';
 import 'package:ar_ai_messaging_client_frontend/app_theme.dart';
 import 'package:ar_ai_messaging_client_frontend/pages/pages.dart';
@@ -128,9 +129,31 @@ class _HomePageState extends State<HomePage> {
                                   //TODO
                                 }
                               }),
-                              ElevatedButton(
-                                child: const Text('Close BottomSheet'),
-                                onPressed: () => Navigator.pop(context),
+                              core.UserListCore(
+                                limit: 20,
+                                filter: core.Filter.notEqual('id', context.currentUser!.id),
+                                emptyBuilder: (context) {
+                                  return const Center(child: Text('There are no users'));
+                                },
+                                loadingBuilder: (context) {
+                                  return const Center(child: CircularProgressIndicator());
+                                },
+                                errorBuilder: (context, error) {
+                                  return DisplayErrorMessage(error: error);
+                                },
+                                listBuilder: (context, items) {
+                                  return Scrollbar(
+                                    child: ListView.builder(
+                                      itemCount: items.length,
+                                      itemBuilder: (context, index) {
+                                        return items[index].when(
+                                          headerItem: (_) => const SizedBox.shrink(),
+                                          userItem: (user) => _SearchContactADDTile(user: user),
+                                        );
+                                      },
+                                    ),
+                                  );
+                                },
                               )
                             ],
                           ),
@@ -216,6 +239,62 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      ),
+    );
+  }
+}
+
+
+class _SearchContactADDTile extends StatelessWidget {
+  const _SearchContactADDTile({
+    Key? key,
+    required this.user,
+  }) : super(key: key);
+
+  final core.User user;
+
+  Future<void> createChannel(BuildContext context) async {
+    final StreamCore = core.StreamChatCore.of(context);
+    final channel = StreamCore.client.channel('messaging', extraData: {
+      'members': [
+        StreamCore.currentUser!.id,
+        user.id,
+      ]
+    });
+    await channel.watch();
+
+    Navigator.of(context).push(
+      ChateScreen.routeWithChannel(channel),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        //createChannel(context);
+      },
+      child: Padding(
+        padding: const EdgeInsets.only(top: 8),
+        child: Container(
+          // message bar height
+          height: 64,
+          margin: const EdgeInsets.symmetric(horizontal: 8),
+
+          // bottom grey line
+          decoration: const BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: Colors.grey,
+                width: 0.2,
+              ),
+            ),
+          ),
+          child: ListTile(
+            leading: Avatar.small(url: user.image),
+            title: Text(user.name),
+          ),
+        ),
       ),
     );
   }

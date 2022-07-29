@@ -6,11 +6,11 @@ import '../theme.dart';
 
 class Searcher extends StatelessWidget {
 
-  final Function(String) onEnterPress;
+  final Function(String)? onEnterPress;
   final TextEditingController controller = TextEditingController();
 
   clearText(){
-    controller?.clear();
+    controller.clear();
   }
 
   Searcher({required this.onEnterPress});
@@ -35,7 +35,7 @@ class Searcher extends StatelessWidget {
           child: TextField(
             // 文本框+图标
             controller: controller,
-            onSubmitted: onEnterPress(controller.text),
+            onSubmitted: (String s)=>onEnterPress!(s),
             decoration: InputDecoration(
               prefixIcon: Icon(
                 CupertinoIcons.search,
