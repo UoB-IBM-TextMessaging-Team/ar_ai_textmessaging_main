@@ -9,6 +9,7 @@ import 'package:floating_bottom_navigation_bar/floating_bottom_navigation_bar.da
 import 'package:ar_ai_messaging_client_frontend/screens/screens.dart';
 import 'package:ar_ai_messaging_client_frontend/widgets/widgets.dart';
 import 'package:flutter/services.dart';
+import 'package:ar_ai_messaging_client_frontend/widgets/search_bars.dart';
 
 class HomePage extends StatefulWidget {
   static Route get route => MaterialPageRoute(
@@ -106,7 +107,34 @@ class _HomePageState extends State<HomePage> {
               child: IconPure(
                 icon: CupertinoIcons.plus_app,
                 onTap: () {
-                  logger.i('TODO Search');
+                  showModalBottomSheet<void>(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(20),
+                      ),
+                    ),
+                    backgroundColor:Theme.of(context).backgroundColor.withOpacity(1),
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Container(
+                        height: 1000,
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Searcher(),
+                              ElevatedButton(
+                                child: const Text('Close BottomSheet'),
+                                onPressed: () => Navigator.pop(context),
+                              )
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                  //logger.i('TODO Search');
                 },
               ),
             ),

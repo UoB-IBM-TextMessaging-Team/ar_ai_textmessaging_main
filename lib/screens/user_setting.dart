@@ -53,7 +53,6 @@ class _UserSettingState extends State<UserSetting> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     findProfilePic();
   }
