@@ -57,9 +57,13 @@ class _HomeChatState extends State<HomeChat> {
             slivers: [
               SliverToBoxAdapter(
                 child: Column(
-                children: const [
+                children: [
                     SizedBox(height: 18),
-                    Searcher(),
+                    Searcher(onEnterPress: (String s) {
+                      if(s.isNotEmpty){
+                        print("Enter:$s");
+                      }
+                    }),
                   ],
                 ),
               ),

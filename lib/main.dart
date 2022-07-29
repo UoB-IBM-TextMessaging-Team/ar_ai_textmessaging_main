@@ -4,12 +4,14 @@ import 'package:ar_ai_messaging_client_frontend/app.dart';
 import 'package:ar_ai_messaging_client_frontend/screens/screens.dart';
 import 'package:ar_ai_messaging_client_frontend/theme.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  final client = StreamChatClient(streamKey);
+  FirebaseFirestore.instance.settings = const Settings(persistenceEnabled: true);//Offline mode on
 
+  final client = StreamChatClient(streamKey);
 
   runApp(
     MyApp(

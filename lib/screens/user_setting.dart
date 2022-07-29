@@ -5,7 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
+import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart' as core;
+import 'package:ar_ai_messaging_client_frontend/app.dart';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:ar_ai_messaging_client_frontend/app.dart';
@@ -73,6 +74,7 @@ class _UserSettingState extends State<UserSetting> {
     }
 
     try {
+      // Firestore Update
       final ref = firebase_storage.FirebaseStorage.instance
           .ref(destination)
           .child('${user}_profile_Picture/');
@@ -81,10 +83,18 @@ class _UserSettingState extends State<UserSetting> {
           .collection("users")
           .doc(useremail)
           .update({"profilePicURL": downloadUrl});
+
+      // Stream Update
+      final client = core.StreamChatCore.of(context).client;
+      final curUser = core.StreamChatCore.of(context).currentUser;
+      await client.partialUpdateUser(curUser!.id,set: {"image": downloadUrl});
+
     } catch (e) {
       // ignore: avoid_print
       print('error occured');
     }
+
+
   }
 
   @override

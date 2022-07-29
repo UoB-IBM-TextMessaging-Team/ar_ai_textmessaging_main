@@ -3,8 +3,18 @@ import 'package:flutter/material.dart';
 
 import '../theme.dart';
 
+
 class Searcher extends StatelessWidget {
-  const Searcher({Key? key}) : super(key: key);
+
+  final Function(String) onEnterPress;
+  final TextEditingController controller = TextEditingController();
+
+  clearText(){
+    controller?.clear();
+  }
+
+  Searcher({required this.onEnterPress});
+
 
   @override
   Widget build(BuildContext context) {
@@ -22,8 +32,10 @@ class Searcher extends StatelessWidget {
           padding: const EdgeInsets.only(
             right: 16,
           ), // 搜索框内部图标和文字于border之间的padding
-          child: const TextField(
+          child: TextField(
             // 文本框+图标
+            controller: controller,
+            onSubmitted: onEnterPress(controller.text),
             decoration: InputDecoration(
               prefixIcon: Icon(
                 CupertinoIcons.search,

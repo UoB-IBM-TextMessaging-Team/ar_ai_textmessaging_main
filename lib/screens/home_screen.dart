@@ -87,11 +87,11 @@ class _HomePageState extends State<HomePage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'My',
-                  style: MyTheme.kAppTitle1,
+                  'Chat',
+                  style: MyTheme.kAppTitle,
                 ),
                 Text(
-                  ' Chat',
+                  ' Jam',
                   style: MyTheme.kAppTitle,
                 ),
               ],
@@ -120,10 +120,14 @@ class _HomePageState extends State<HomePage> {
                         height: 1000,
                         child: Center(
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             mainAxisSize: MainAxisSize.min,
                             children: <Widget>[
-                              Searcher(),
+                              Searcher(onEnterPress: (String s) {
+                                if(s.isNotEmpty){
+                                  //TODO
+                                }
+                              }),
                               ElevatedButton(
                                 child: const Text('Close BottomSheet'),
                                 onPressed: () => Navigator.pop(context),
