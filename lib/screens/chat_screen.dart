@@ -27,6 +27,7 @@ class ChateScreen extends StatefulWidget {
 
 class _ChateScreenState extends State<ChateScreen> {
   late StreamSubscription<int> unreadCountSubscription;
+  late var newMessageSubscription;
 
   @override
   void initState() {
@@ -37,6 +38,14 @@ class _ChateScreenState extends State<ChateScreen> {
         .state!
         .unreadCountStream
         .listen(_unreadCountHandler);
+
+    newMessageSubscription = StreamChannel.of(context).channel.on("message.new").listen((Event event) {
+      if(event.message?.user?.id != context.currentUser?.id){
+        // TODO
+        // Trigger the AR scene
+        print("Receive Message: ${event.message?.text}");
+      }
+    });
   }
 
   Future<void> _unreadCountHandler(int count) async {
@@ -48,6 +57,7 @@ class _ChateScreenState extends State<ChateScreen> {
   @override
   void dispose() {
     unreadCountSubscription.cancel();
+    newMessageSubscription.cancel();
     super.dispose();
   }
 
