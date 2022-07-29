@@ -342,7 +342,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       await FirebaseFirestore.instance
           .collection("users")
           .doc(_emailController.text.trim())
-          .set({"profilePicURL": downloadUrl});
+          .set({"profilePicURL": downloadUrl,"friendList":{}});
     } catch (e) {
       // ignore: avoid_print
       print('error occured');
