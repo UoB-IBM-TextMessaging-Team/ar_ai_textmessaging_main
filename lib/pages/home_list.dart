@@ -7,6 +7,11 @@ import '../widgets/widgets.dart';
 class ContactsPage extends StatelessWidget {
   const ContactsPage({Key? key}) : super(key: key);
 
+
+  getFriendList(){
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
