@@ -3,12 +3,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart' as core;
 import 'package:ar_ai_messaging_client_frontend/app.dart';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:path_provider/path_provider.dart';
 import 'package:ar_ai_messaging_client_frontend/app.dart';
 // import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 // import 'package:cloud_firestore/cloud_firestore.dart';
@@ -63,11 +65,19 @@ class _UserSettingState extends State<UserSetting> {
     if (_photo == null) return;
     final destination = 'profilePicture/$user';
 
+    // Compress the image
+    String dir = (await getTemporaryDirectory()).path;
+    File compressFile = new File('$dir/lastProfileCompressed.jpeg');;
+    await FlutterImageCompress.compressAndGetFile(
+      _photo!.path, compressFile.path,format: CompressFormat.jpeg,
+      quality: 5,
+    );
+
     try {
       final ref = firebase_storage.FirebaseStorage.instance
           .ref(destination)
           .child('${user}_profile_Picture/');
-      await ref.putFile(_photo!);
+      await ref.putFile(compressFile!);
     } catch (e) {
       // ignore: avoid_print
       print('error occured');

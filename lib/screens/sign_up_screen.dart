@@ -279,7 +279,9 @@ import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart' as core;
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -323,12 +325,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (_photo == null) return;
     //storage
 
+
+    // Compress the image
+    String dir = (await getTemporaryDirectory()).path;
+    File compressFile = new File('$dir/lastProfileCompressed.jpeg');;
+    await FlutterImageCompress.compressAndGetFile(
+      _photo!.path, compressFile.path,format: CompressFormat.jpeg,
+      quality: 5,
+    );
+
     final destination = 'profilePicture/${_nameController.text}';
     try {
       final ref = firebase_storage.FirebaseStorage.instance
           .ref(destination)
           .child('${_nameController.text.trim()}_profile_Picture/');
-      await ref.putFile(_photo!);
+      await ref.putFile(compressFile!);
     } catch (e) {
       // ignore: avoid_print
       print('error occured');
