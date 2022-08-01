@@ -100,10 +100,6 @@ class ContactsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("build chat listy");
-    print(fListNotifier);
-    print("WTF");
-    print(fListNotifier.value);
     friendListNotifier()?.updateFriendList();
     return Padding(
       padding: const EdgeInsets.only(top: 24),
@@ -111,7 +107,10 @@ class ContactsPage extends StatelessWidget {
         builder: (BuildContext context, List<String> value, Widget? child) {
           return StrCore.UserListCore(
             limit: 20,
-            filter: StrCore.Filter.in_('id', value),
+            filter: StrCore.Filter.and([
+              StrCore.Filter.in_('id', value),
+              StrCore.Filter.notEqual('id', context.currentUser!.id)
+            ]),
             emptyBuilder: (context) {
               return const Center(child: Text('There are no users'));
             },

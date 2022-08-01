@@ -8,6 +8,7 @@ import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart' as core;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
 
 import '../app_theme.dart';
 import '../pages/home_list.dart';
@@ -32,6 +33,8 @@ class FriendSearchScreenState extends State<FriendSearchScreen> {
   @override
   void dispose() {
     core.Filter.empty();
+    core.Filter.in_('id', fListNotifier.value);
+    friendListNotifier()?.updateFriendList();
     super.dispose();
   }
 
@@ -75,7 +78,10 @@ class FriendSearchScreenState extends State<FriendSearchScreen> {
             Expanded(
                 child: core.UserListCore(
                   limit: 50,
-                  filter: core.Filter.autoComplete('name', autoCompleteText),
+                  filter: core.Filter.and([
+                    core.Filter.autoComplete('name', autoCompleteText),
+                    core.Filter.notEqual('id', context.currentUser!.id)
+                  ]),
                   emptyBuilder: (context) {
                     return const Padding(
                       padding: EdgeInsets.only(top: 10),
