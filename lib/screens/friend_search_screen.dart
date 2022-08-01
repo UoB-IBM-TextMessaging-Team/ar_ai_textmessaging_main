@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../app_theme.dart';
+import '../pages/home_list.dart';
 import '../widgets/avatar.dart';
 import '../widgets/display_error_message.dart';
 import '../widgets/search_bars.dart';
@@ -27,6 +28,12 @@ class FriendSearchScreen extends StatefulWidget {
 
 class FriendSearchScreenState extends State<FriendSearchScreen> {
   String autoCompleteText = 'to search';
+
+  @override
+  void dispose() {
+    core.Filter.empty();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

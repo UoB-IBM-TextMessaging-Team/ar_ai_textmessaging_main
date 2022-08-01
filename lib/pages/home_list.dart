@@ -1,47 +1,141 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
-import 'package:ar_ai_messaging_client_frontend/app.dart';
+import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart' as StrCore;
+import '../app.dart';
 import '../screens/screens.dart';
 import '../widgets/widgets.dart';
 
+import 'package:flutter/services.dart';
+/*
+class ContactsPage extends StatefulWidget{
+
+
+
+
+  @override
+  State<ContactsPage> createState() => ContactsPageState();
+}
+
+
+ */
+
+
 class ContactsPage extends StatelessWidget {
-  const ContactsPage({Key? key}) : super(key: key);
 
+  ContactsPage( {Key? key}) : super(key: key);
 
-  getFriendList(){
-
-  }
-
+/*
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 24),
-      child: UserListCore(
-        limit: 20,
-        filter: Filter.notEqual('id', context.currentUser!.id),
-        emptyBuilder: (context) {
-          return const Center(child: Text('There are no users'));
-        },
-        loadingBuilder: (context) {
-          return const Center(child: CircularProgressIndicator());
-        },
-        errorBuilder: (context, error) {
-          return DisplayErrorMessage(error: error);
-        },
-        listBuilder: (context, items) {
-          return Scrollbar(
-            child: ListView.builder(
-              itemCount: items.length,
-              itemBuilder: (context, index) {
-                return items[index].when(
-                  headerItem: (_) => const SizedBox.shrink(),
-                  userItem: (user) => _ContactTile(user: user),
+      child: StreamBuilder<QuerySnapshot>(
+          stream: _usersStream,
+          builder:
+              (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            if (snapshot.hasError) {
+              return const Center(
+                  child: DisplayErrorMessage(error: "Error Unknown"));
+            }
+
+            if (!snapshot.hasData){
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            return ListView(
+              children: snapshot.data.docs.((DocumentSnapshot document) {
+                Map<String, dynamic> data =
+                    document.data()! as Map<String, dynamic>;
+                print(data.toString());
+                return StrCore.UserListCore(
+                  limit: 50,
+                  filter: StrCore.Filter.in_(
+                      'id',
+                      data[FirebaseAuth.instance.currentUser?.email]
+                              ['friendList']
+                          .keys
+                          .toList()),
+                  emptyBuilder: (context) {
+                    return const Center(child: Text('There are no users'));
+                  },
+                  loadingBuilder: (context) {
+                    return const Center(child: CircularProgressIndicator());
+                  },
+                  errorBuilder: (context, error) {
+                    return DisplayErrorMessage(error: error);
+                  },
+                  listBuilder: (context, items) {
+                    return ListView.builder(
+                      itemCount: items.length,
+                      itemBuilder: (context, index) {
+                        return items[index].when(
+                          headerItem: (_) => const SizedBox.shrink(),
+                          userItem: (user) => _ContactTile(user: user),
+                        );
+                      },
+                    );
+                  },
                 );
-              },
-            ),
+              }).toList(),
+            );
+          }),
+    );
+  }
+
+*/
+/*
+  @override
+  void initState() {
+    Notifier.updateFriendList();
+    super.initState();
+  }
+
+ */
+
+  @override
+  Widget build(BuildContext context) {
+    print("build chat listy");
+    print(fListNotifier);
+    print("WTF");
+    print(fListNotifier.value);
+    friendListNotifier()?.updateFriendList();
+    return Padding(
+      padding: const EdgeInsets.only(top: 24),
+      child: ValueListenableBuilder<List<String>>(
+        builder: (BuildContext context, List<String> value, Widget? child) {
+          return StrCore.UserListCore(
+            limit: 20,
+            filter: StrCore.Filter.in_('id', value),
+            emptyBuilder: (context) {
+              return const Center(child: Text('There are no users'));
+            },
+            loadingBuilder: (context) {
+              return const Center(child: CircularProgressIndicator());
+            },
+            errorBuilder: (context, error) {
+              return DisplayErrorMessage(error: error);
+            },
+            listBuilder: (context, items) {
+              return ListView.builder(
+                itemCount: items.length,
+                itemBuilder: (context, index) {
+                  return items[index].when(
+                    headerItem: (_) => const SizedBox.shrink(),
+                    userItem: (user) => _ContactTile(user: user),
+                  );
+                },
+              );
+            },
           );
         },
-      ),
+        valueListenable: fListNotifier,
+      )
     );
   }
 }
@@ -52,10 +146,10 @@ class _ContactTile extends StatelessWidget {
     required this.user,
   }) : super(key: key);
 
-  final User user;
+  final StrCore.User user;
 
   Future<void> createChannel(BuildContext context) async {
-    final core = StreamChatCore.of(context);
+    final core = StrCore.StreamChatCore.of(context);
     final channel = core.client.channel('messaging', extraData: {
       'members': [
         core.currentUser!.id,

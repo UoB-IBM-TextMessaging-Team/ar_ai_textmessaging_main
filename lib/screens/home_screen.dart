@@ -1,4 +1,5 @@
 import 'package:ar_ai_messaging_client_frontend/screens/friend_search_screen.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -29,14 +30,15 @@ class _HomePageState extends State<HomePage> {
     FloatingNavbarItem(icon: CupertinoIcons.ellipses_bubble),
     FloatingNavbarItem(icon: CupertinoIcons.list_bullet),
   ];
-  final pages = const [
-    HomeChat(),
-    ContactsPage(),
-  ];
   int currentIndex = 0;
   final pageController = PageController();
   final useremail = FirebaseAuth.instance.currentUser?.email;
   String picture = "";
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   void onTap(int index) {
     pageController.jumpToPage(index);
@@ -68,6 +70,7 @@ class _HomePageState extends State<HomePage> {
       return NetworkImage(picture);
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -170,7 +173,10 @@ class _HomePageState extends State<HomePage> {
             scrollDirection: Axis.horizontal,
             controller: pageController,
             onPageChanged: onPageChanged,
-            children: pages,
+            children: [
+              HomeChat(),
+              ContactsPage(),
+            ],
           ),
         ),
 
