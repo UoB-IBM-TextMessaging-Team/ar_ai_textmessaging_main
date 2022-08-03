@@ -7,8 +7,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart' as core;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-//import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
 
 import '../app_theme.dart';
 import '../pages/home_list.dart';
@@ -129,7 +127,7 @@ class FriendSearchScreenState extends State<FriendSearchScreen> {
 
 
 class _SearchContactAddTile extends StatelessWidget {
-  const _SearchContactAddTile({
+  _SearchContactAddTile({
     Key? key,
     required this.user, this.context,
   }) : super(key: key);
@@ -137,10 +135,11 @@ class _SearchContactAddTile extends StatelessWidget {
   final core.User user;
   final context;
 
+  final useremail = FirebaseAuth.instance.currentUser?.email;
+
   //late bool isInFriendList = false;
 
   addFriendUIDToFirestore() async {
-    final useremail = FirebaseAuth.instance.currentUser?.email;
     await FirebaseFirestore.instance
         .collection("users")
         .doc(useremail)
@@ -168,6 +167,15 @@ class _SearchContactAddTile extends StatelessWidget {
     friendListNotifier().updateFriendList();
   }
 
+
+  addFriendInOthers() async{
+    var extraData = user.extraData as Map<String,dynamic>;
+    String toAddEmail = extraData['email'];
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(toAddEmail)
+        .set({"friendList":{useremail:core.StreamChatCore.of(context).currentUser?.name}},SetOptions(merge: true));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -198,7 +206,7 @@ class _SearchContactAddTile extends StatelessWidget {
                   onPressed: () {
                     addFriendUIDToFirestore();
                   },
-                  child: (fListNotifier.value.contains(user.id))?Icon(CupertinoIcons.person_add_solid):Icon(CupertinoIcons.check_mark_circled_solid),
+                  child: Icon(CupertinoIcons.person_add_solid),
                 ),
           ),
         ),

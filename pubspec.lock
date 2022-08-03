@@ -741,14 +741,14 @@ packages:
       name: stream_chat
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.4.0"
+    version: "4.4.1"
   stream_chat_flutter_core:
     dependency: "direct main"
     description:
       name: stream_chat_flutter_core
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.4.0"
+    version: "4.4.1"
   string_scanner:
     dependency: transitive
     description:

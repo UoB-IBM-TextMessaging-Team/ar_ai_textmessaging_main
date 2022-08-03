@@ -14,7 +14,7 @@ dependencies:
   google_fonts: ^3.0.1
   jiffy: ^5.0.0
   cached_network_image: ^3.2.1
-  stream_chat_flutter_core: ^4.3.0
+  stream_chat_flutter_core: ^4.4.1
   firebase_auth: ^3.3.14
   firebase_core: ^1.19.2
   firebase_storage: ^10.0.3
