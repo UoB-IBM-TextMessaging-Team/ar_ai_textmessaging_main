@@ -29,6 +29,16 @@ class _ChateScreenState extends State<ChateScreen> {
   late StreamSubscription<int> unreadCountSubscription;
   late var newMessageSubscription;
 
+  Future<void> _sendMessage(String text) async {
+    print(text);
+    if (text.isNotEmpty) {
+        StreamChannel.of(context)
+            .channel
+            .sendMessage(Message(text: text));
+        FocusScope.of(context).unfocus();
+      }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -79,7 +89,7 @@ class _ChateScreenState extends State<ChateScreen> {
               .transparent, // Make AppBar transparent and show background image which is set to whole screen <====
           // app bar
           appBar: AppBar(
-            backgroundColor: Theme.of(context).backgroundColor.withOpacity(0),
+            backgroundColor: Theme.of(context).backgroundColor.withOpacity(0.3),
             iconTheme: Theme.of(context).iconTheme,
             centerTitle: false,
             title: const AppBarTitle(),
@@ -116,7 +126,7 @@ class _ChateScreenState extends State<ChateScreen> {
               decoration: BoxDecoration(
                 color: Theme.of(context)
                     .cardColor
-                    .withOpacity(0), // 首页列表背景色 <=========
+                    .withOpacity(0.2), // 首页列表背景色 <=========
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(50),
                   topRight: Radius.circular(50),
@@ -142,7 +152,19 @@ class _ChateScreenState extends State<ChateScreen> {
                             _MessageList(messages: messages),
                       ),
                     ),
-                    const _ActionBar(),
+                    _ActionBar(
+                      onEnterPress: (String s){
+                        print("Act ecter");
+                        setState(() {
+                          _sendMessage(s);
+                        });
+                      },
+                      onIdentityPress: (){
+                        setState(() {
+                          print("onIdentityPress");
+                        });
+                      },
+                    ),
                   ],
                 ),
               ),
@@ -380,33 +402,31 @@ class _MessageTile extends StatelessWidget {
     );
   }
 }
-
+/*
 class _ActionBar extends StatefulWidget {
-  const _ActionBar({Key? key}) : super(key: key);
+  _ActionBar({Key? key}) : super(key: key);
 
   @override
   State<_ActionBar> createState() => _ActionBarState();
 }
+*/
 
-class _ActionBarState extends State<_ActionBar> {
+class _ActionBar extends StatelessWidget {
+
+  _ActionBar({this.onEnterPress,required this.onIdentityPress});
+
   final TextEditingController controller = TextEditingController();
+  final Function(String)? onEnterPress;
+  final VoidCallback onIdentityPress;
 
-  Future<void> _sendMessage() async {
-    if (controller.text.isNotEmpty) {
-      StreamChannel.of(context)
-          .channel
-          .sendMessage(Message(text: controller.text));
-      controller.clear();
-      FocusScope.of(context).unfocus();
-    }
-  }
 
+/*
   @override
   void dispose() {
     controller.dispose();
     super.dispose();
   }
-
+*/
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -414,7 +434,7 @@ class _ActionBarState extends State<_ActionBar> {
       top: false,
       child: Container(
         padding:
-            const EdgeInsets.only(top: 10, bottom: 20, left: 10, right: 10),
+        const EdgeInsets.only(top: 10, bottom: 20, left: 10, right: 10),
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
           borderRadius: const BorderRadius.only(
@@ -454,7 +474,7 @@ class _ActionBarState extends State<_ActionBar> {
                             //hintText: 'Type your message here ...',
                             //hintStyle: TextStyle(color: Colors.grey[500], fontWeight: FontWeight.bold),
                           ),
-                          onSubmitted: (_) => _sendMessage(),
+                          onSubmitted: (String s)=>onEnterPress!(s),
                         ),
                       ),
                     ),
@@ -468,7 +488,7 @@ class _ActionBarState extends State<_ActionBar> {
               ),
             ),
             GestureDetector(
-              onTap: _sendMessage,
+              onTap: onIdentityPress,
               child: CircleAvatar(
                 backgroundColor: Theme.of(context).cardColor,
                 child: const Padding(
