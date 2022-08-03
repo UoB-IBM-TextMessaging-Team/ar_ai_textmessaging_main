@@ -37,6 +37,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
+    friendListNotifier().updateFriendList();
     super.initState();
   }
 
@@ -114,6 +115,14 @@ class _HomePageState extends State<HomePage> {
                 onTap: () {
                   Navigator.of(context).push(
                     FriendSearchScreen.route
+                  ).then((_){
+                    currentIndex = 0;
+                    pageController.jumpToPage(0);//Just jump to home_chat
+                    core.Filter.and([
+                      core.Filter.in_('id', fListNotifier.value),
+                      core.Filter.notEqual('id', context.currentUser!.id),
+                    ]);
+                  }
                   );
                 },
               ),

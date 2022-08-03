@@ -8,23 +8,18 @@ import '../screens/screens.dart';
 import '../widgets/widgets.dart';
 
 import 'package:flutter/services.dart';
-/*
+
 class ContactsPage extends StatefulWidget{
-
-
-
-
+  ContactsPage( {Key? key}) : super(key: key);
   @override
   State<ContactsPage> createState() => ContactsPageState();
 }
 
 
- */
+
+class ContactsPageState extends State<ContactsPage> {
 
 
-class ContactsPage extends StatelessWidget {
-
-  ContactsPage( {Key? key}) : super(key: key);
 
 /*
   @override
@@ -89,23 +84,30 @@ class ContactsPage extends StatelessWidget {
   }
 
 */
-/*
+
+  final StrCore.UserListController _userListController = StrCore.UserListController();
+
   @override
   void initState() {
-    Notifier.updateFriendList();
+    friendListNotifier()?.updateFriendList();
+    StrCore.Filter.and([
+      StrCore.Filter.in_('id', fListNotifier.value),
+      StrCore.Filter.notEqual('id', context.currentUser!.id)
+    ]);
+    _userListController.loadData;
     super.initState();
   }
 
- */
 
   @override
   Widget build(BuildContext context) {
-    friendListNotifier()?.updateFriendList();
+    //friendListNotifier()?.updateFriendList();
     return Padding(
       padding: const EdgeInsets.only(top: 24),
       child: ValueListenableBuilder<List<String>>(
         builder: (BuildContext context, List<String> value, Widget? child) {
           return StrCore.UserListCore(
+            userListController: _userListController,
             limit: 20,
             filter: StrCore.Filter.and([
               StrCore.Filter.in_('id', value),

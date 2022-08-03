@@ -32,4 +32,8 @@ class friendListNotifier{
       fListNotifier.value = FriList.keys.toList();
     }, onError: (e) => print("Error getting document: $e"),);
   }
+
+  emptyFriendList(){
+    fListNotifier.value = ['WooHaa'];
+  }
 }

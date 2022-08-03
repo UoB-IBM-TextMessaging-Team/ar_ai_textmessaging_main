@@ -79,45 +79,34 @@ class FriendSearchScreenState extends State<FriendSearchScreen> {
                 }),
               ),
               Expanded(
-                  child: core.UserListCore(
-                    userListController: _userListController,
-                    limit: 50,
-                    filter: core.Filter.and([
-                      core.Filter.autoComplete('name', autoCompleteText),
-                      core.Filter.notEqual('id', context.currentUser!.id)
-                    ]),
-                    emptyBuilder: (context) {
-                      return const Padding(
-                        padding: EdgeInsets.only(top: 10),
-                        child: Center(
-                            child:
-                                Text('No User found, please try a vaild user name')),
-                      );
-                    },
-                    loadingBuilder: (context) {
-                      return const Center(child: CircularProgressIndicator());
-                    },
-                    errorBuilder: (context, error) {
-                      return DisplayErrorMessage(error: error);
-                    },
-                    listBuilder: (context, items) {
-                      return Scrollbar(
-                        child: ListView.builder(
-                          padding: const EdgeInsets.all(0),
-                          itemCount: items.length,
-                          itemBuilder: (context, index) {
-                            return items[index].when(
-                              headerItem: (_) => const SizedBox.shrink(),
-                              userItem: (user) => _SearchContactAddTile(
-                                user: user,
-                                context: context
+                child: StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('users')
+                        .snapshots(),
+                    builder: (context, snapshots) {
+                      return (snapshots.connectionState ==
+                              ConnectionState.waiting)
+                          ? Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : Scrollbar(
+                              child: ListView.builder(
+                                padding: const EdgeInsets.all(0),
+                                itemCount: snapshots.data?.docs.length,
+                                itemBuilder: (context, index) {
+                                  /*
+                                  return items[index].when(
+                                    headerItem: (_) => const SizedBox.shrink(),
+                                    userItem: (user) => _SearchContactAddTile(
+                                        user: user, context: context),
+
+                                   */
+                                  return Text("Build ongoing");
+                                },
                               ),
-                        );
-                      },
-                    ),
-                  );
-                },
-              )),
+                            );
+                    }),
+              )
             ],
           ),
         ),
@@ -126,55 +115,48 @@ class FriendSearchScreenState extends State<FriendSearchScreen> {
   }
 }
 
-
-
 class _SearchContactAddTile extends StatelessWidget {
   const _SearchContactAddTile({
     Key? key,
-    required this.user, this.context,
+    required this.user,
+    this.context,
   }) : super(key: key);
 
   final core.User user;
   final context;
 
-  //late bool isInFriendList = false;
-
   addFriendUIDToFirestore() async {
     final useremail = FirebaseAuth.instance.currentUser?.email;
-    await FirebaseFirestore.instance
-        .collection("users")
-        .doc(useremail)
-        .set({"friendList":{user.id:user.name}},SetOptions(merge: true));
+    await FirebaseFirestore.instance.collection("users").doc(useremail).set({
+      "friendList": {user.id: user.name}
+    }, SetOptions(merge: true));
 
-    Timer? timer = Timer(Duration(milliseconds: 1000), (){
+    Timer? timer = Timer(Duration(milliseconds: 1000), () {
       Navigator.of(context, rootNavigator: true).pop();
     });
-    showDialog(context: context, builder: (BuildContext context) =>
-      CupertinoAlertDialog(
-          title: Text(
-            'Friend Added!',
-            style: GoogleFonts.openSans(fontSize: 26),
-          ),
-        content: Text('🤖💓',style: TextStyle(
-          fontSize: 40,
-        )),
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => CupertinoAlertDialog(
+        title: Text(
+          'Friend Added!',
+          style: GoogleFonts.openSans(fontSize: 26),
+        ),
+        content: Text('🤖💓',
+            style: TextStyle(
+              fontSize: 40,
+            )),
       ),
-    ).then((value){
+    ).then((value) {
       // dispose the timer in case something else has triggered the dismiss.
       timer?.cancel();
       timer = null;
     });
-
-    friendListNotifier().updateFriendList();
   }
-
 
   @override
   Widget build(BuildContext context) {
-    //isInFriendList = fListNotifier.value.contains(user.id);
     return InkWell(
-      onTap: () {
-      },
+      onTap: () {},
       child: Padding(
         padding: const EdgeInsets.only(top: 8),
         child: Container(
@@ -195,16 +177,14 @@ class _SearchContactAddTile extends StatelessWidget {
             leading: Avatar.small(url: user.image),
             title: Text(user.name),
             trailing: ElevatedButton(
-                  onPressed: () {
-                    addFriendUIDToFirestore();
-                  },
-                  child: (fListNotifier.value.contains(user.id))?Icon(CupertinoIcons.person_add_solid):Icon(CupertinoIcons.check_mark_circled_solid),
-                ),
+              onPressed: () {
+                addFriendUIDToFirestore();
+              },
+              child: Icon(CupertinoIcons.person_add_solid),
+            ),
           ),
         ),
       ),
     );
   }
 }
-
-
