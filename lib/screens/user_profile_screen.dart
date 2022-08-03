@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -48,7 +50,8 @@ class _UserProfileState extends State<UserProfile> {
   Widget build(BuildContext context) {
     final user = context.currentUser;
     final borderRadius = BorderRadius.circular(20);
-    return Container(
+    return Stack(
+      /*
       decoration: const BoxDecoration(
         image: DecorationImage(
           image: ExactAssetImage('assets/images/image1.jpg'),
@@ -56,7 +59,15 @@ class _UserProfileState extends State<UserProfile> {
           fit: BoxFit.cover,
         ),
       ),
-      child: Scaffold(
+       */
+      children: [
+        Container(
+          margin: const EdgeInsets.only(top: 0),
+          child: SizedBox(
+            child: Image.asset('assets/images/image1.jpg'),
+          ),
+        ),
+        Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
           title: const Text('Profile'),
@@ -212,6 +223,7 @@ class _UserProfileState extends State<UserProfile> {
           ),
         ),
       ),
+      ]
     );
   }
 }

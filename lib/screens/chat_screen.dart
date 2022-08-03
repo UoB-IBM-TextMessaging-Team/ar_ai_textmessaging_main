@@ -153,7 +153,6 @@ class _ChateScreenState extends State<ChateScreen> {
                     ),
                     _ActionBar(
                       onEnterPress: (String s){
-                        print("Act ecter");
                         setState(() {
                           _sendMessage(s);
                         });
