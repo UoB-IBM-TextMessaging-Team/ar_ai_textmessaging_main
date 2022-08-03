@@ -30,7 +30,6 @@ class _ChateScreenState extends State<ChateScreen> {
   late var newMessageSubscription;
 
   Future<void> _sendMessage(String text) async {
-    print(text);
     if (text.isNotEmpty) {
         StreamChannel.of(context)
             .channel
