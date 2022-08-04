@@ -35,10 +35,7 @@ class FriendSearchScreenState extends State<FriendSearchScreen> {
     bool shouldPop = true;
     return WillPopScope(
       onWillPop: () async {
-        core.Filter.and([
-          core.Filter.in_('id', fListNotifier.value),
-          core.Filter.notEqual('id', context.currentUser!.id)
-        ]);
+        //TODO
         return shouldPop;
       },
       child: Scaffold(
@@ -164,7 +161,6 @@ class _SearchContactAddTile extends StatelessWidget {
       timer = null;
     });
 
-    friendListNotifier().updateFriendList();
   }
 
 

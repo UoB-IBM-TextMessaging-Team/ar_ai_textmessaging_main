@@ -39,7 +39,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    friendListNotifier().updateFriendList();
     super.initState();
   }
 
@@ -77,7 +76,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    friendListNotifier().updateFriendList();
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(

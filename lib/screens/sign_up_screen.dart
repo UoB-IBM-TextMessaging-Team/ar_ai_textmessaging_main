@@ -328,7 +328,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     // Compress the image
     String dir = (await getTemporaryDirectory()).path;
-    File compressFile = new File('$dir/lastProfileCompressed.jpeg');;
+    File compressFile = new File('$dir/lastProfileCompressed.jpeg');
     await FlutterImageCompress.compressAndGetFile(
       _photo!.path, compressFile.path,format: CompressFormat.jpeg,
       quality: 5,
@@ -354,7 +354,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           .collection("users")
           .doc(_emailController.text.trim())
           .set({"profilePicURL": downloadUrl,
-                "friendList":{},
+                "friendList":{' ':'Occupation for avoid getstream.io service query error'},
                 "userName":_nameController.text,
                 "userEmail":_emailController.text});
     } catch (e) {

@@ -18,7 +18,7 @@ extension StreamChatContext on BuildContext {
   User? get currentUser => StreamChatCore.of(this).currentUser;
 
 }
-
+/*
 
 ValueNotifier<List<String>> fListNotifier = ValueNotifier<List<String>>(['WooHoo']);
 
@@ -37,6 +37,7 @@ class friendListNotifier{
     fListNotifier.value = ['WooHaa'];
   }
 }
+*/
 
 class ZeroDurationRoute extends MaterialPageRoute {
   ZeroDurationRoute({required WidgetBuilder builder}) : super(builder: builder);

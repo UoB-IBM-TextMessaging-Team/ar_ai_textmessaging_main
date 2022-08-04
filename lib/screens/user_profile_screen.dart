@@ -148,7 +148,7 @@ class _UserProfileState extends State<UserProfile> {
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                'ID: 12345',
+                                'Email: ${useremail}',
                                 style: MyTheme.textTime,
                               )
                             ],
