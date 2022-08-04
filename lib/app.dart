@@ -37,3 +37,10 @@ class friendListNotifier{
     fListNotifier.value = ['WooHaa'];
   }
 }
+
+class ZeroDurationRoute extends MaterialPageRoute {
+  ZeroDurationRoute({required WidgetBuilder builder}) : super(builder: builder);
+
+  @override
+  Duration get transitionDuration => Duration(seconds: 0);
+}

@@ -12,7 +12,7 @@ import '../widgets/widgets.dart';
 import 'screens.dart';
 
 class UserProfile extends StatefulWidget {
-  static Route get route => MaterialPageRoute(
+  static Route get route => ZeroDurationRoute(
         builder: (context) => const UserProfile(),
       );
 
@@ -63,9 +63,8 @@ class _UserProfileState extends State<UserProfile> {
       children: [
         Container(
           margin: const EdgeInsets.only(top: 0),
-          child: SizedBox(
-            child: Image.asset('assets/images/image1.jpg'),
-          ),
+          height: 450,
+          color: Colors.cyan,
         ),
         Scaffold(
         backgroundColor: Colors.transparent,

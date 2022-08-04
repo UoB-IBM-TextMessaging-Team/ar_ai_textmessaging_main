@@ -14,6 +14,8 @@ import 'package:ar_ai_messaging_client_frontend/widgets/widgets.dart';
 import 'package:flutter/services.dart';
 import 'package:ar_ai_messaging_client_frontend/widgets/search_bars.dart';
 
+import 'friend_search_screen_firebase.dart';
+
 class HomePage extends StatefulWidget {
   static Route get route => MaterialPageRoute(
         builder: (context) => HomePage(),
@@ -75,6 +77,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    friendListNotifier().updateFriendList();
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
@@ -114,14 +117,17 @@ class _HomePageState extends State<HomePage> {
                 icon: CupertinoIcons.plus_app,
                 onTap: () {
                   Navigator.of(context).push(
-                    FriendSearchScreen.route
+                    FriendSearchScreenFb.route
                   ).then((_){
                     currentIndex = 0;
                     pageController.jumpToPage(0);//Just jump to home_chat
+                    /*
                     core.Filter.and([
                       core.Filter.in_('id', fListNotifier.value),
                       core.Filter.notEqual('id', context.currentUser!.id),
                     ]);
+
+                     */
                   }
                   );
                 },

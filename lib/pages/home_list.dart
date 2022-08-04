@@ -91,7 +91,7 @@ class ContactsPageState extends State<ContactsPage> {
   void initState() {
     friendListNotifier()?.updateFriendList();
     StrCore.Filter.and([
-      StrCore.Filter.in_('id', fListNotifier.value),
+      StrCore.Filter.in_('email', fListNotifier.value),
       StrCore.Filter.notEqual('id', context.currentUser!.id)
     ]);
     _userListController.loadData;
@@ -110,7 +110,7 @@ class ContactsPageState extends State<ContactsPage> {
             userListController: _userListController,
             limit: 20,
             filter: StrCore.Filter.and([
-              StrCore.Filter.in_('id', value),
+              StrCore.Filter.in_('email', value),
               StrCore.Filter.notEqual('id', context.currentUser!.id)
             ]),
             emptyBuilder: (context) {

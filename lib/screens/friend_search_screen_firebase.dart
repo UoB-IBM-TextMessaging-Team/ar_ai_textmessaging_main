@@ -16,34 +16,57 @@ import '../widgets/avatar.dart';
 import '../widgets/display_error_message.dart';
 import '../widgets/search_bars.dart';
 
-class FriendSearchScreen extends StatefulWidget {
-  static Route get route => MaterialPageRoute(
-        builder: (context) => FriendSearchScreen(),
+class FriendSearchScreenFb extends StatefulWidget {
+  static Route get route => ZeroDurationRoute(
+        builder: (context) => FriendSearchScreenFb(),
       );
 
-  FriendSearchScreen({Key? key}) : super(key: key);
+  FriendSearchScreenFb({Key? key}) : super(key: key);
 
   @override
-  State<FriendSearchScreen> createState() => FriendSearchScreenState();
+  State<FriendSearchScreenFb> createState() => FriendSearchScreenFbState();
 }
 
-class FriendSearchScreenState extends State<FriendSearchScreen> {
+class FriendSearchScreenFbState extends State<FriendSearchScreenFb> {
   String autoCompleteText = 'to search';
 
-  final core.UserListController _userListController = core.UserListController();
+  addFriendUIDToFirestore(DocumentSnapshot fbUser) async {
+    final useremail = FirebaseAuth.instance.currentUser?.email;
+    await FirebaseFirestore.instance.collection("users").doc(useremail).set({
+      "friendList": {fbUser['userEmail']: fbUser['userName']}
+    }, SetOptions(merge: true));
+
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(fbUser['userEmail'])
+        .set({"friendList":{useremail:core.StreamChatCore.of(context).currentUser?.name}},SetOptions(merge: true));
+
+    Timer? timer = Timer(Duration(milliseconds: 1000), () {
+      Navigator.of(context, rootNavigator: true).pop();
+    });
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => CupertinoAlertDialog(
+        title: Text(
+          'Friend Added!',
+          style: GoogleFonts.openSans(fontSize: 26),
+        ),
+        content: Text('🤖💓',
+            style: TextStyle(
+              fontSize: 40,
+            )),
+      ),
+    ).then((value) {
+      // dispose the timer in case something else has triggered the dismiss.
+      timer?.cancel();
+      timer = null;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     bool shouldPop = true;
-    return WillPopScope(
-      onWillPop: () async {
-        core.Filter.and([
-          core.Filter.in_('id', fListNotifier.value),
-          core.Filter.notEqual('id', context.currentUser!.id)
-        ]);
-        return shouldPop;
-      },
-      child: Scaffold(
+    return Scaffold(
         resizeToAvoidBottomInset: false,
         body: Container(
           decoration: BoxDecoration(
@@ -82,6 +105,9 @@ class FriendSearchScreenState extends State<FriendSearchScreen> {
                 child: StreamBuilder<QuerySnapshot>(
                     stream: FirebaseFirestore.instance
                         .collection('users')
+                        .where('userName',
+                          isGreaterThanOrEqualTo: autoCompleteText,
+                          isLessThanOrEqualTo: autoCompleteText+'\uf8ff')
                         .snapshots(),
                     builder: (context, snapshots) {
                       return (snapshots.connectionState ==
@@ -94,14 +120,44 @@ class FriendSearchScreenState extends State<FriendSearchScreen> {
                                 padding: const EdgeInsets.all(0),
                                 itemCount: snapshots.data?.docs.length,
                                 itemBuilder: (context, index) {
+                                  DocumentSnapshot FbUser = snapshots.data?.docs[index] as DocumentSnapshot<Object?>;
+                                  return InkWell(
+                                    onTap: () {},
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(top: 8),
+                                      child: Container(
+                                        // message bar height
+                                        height: 64,
+                                        margin: const EdgeInsets.symmetric(horizontal: 8),
+
+                                        // bottom grey line
+                                        decoration: const BoxDecoration(
+                                          border: Border(
+                                            bottom: BorderSide(
+                                              color: Colors.grey,
+                                              width: 0.2,
+                                            ),
+                                          ),
+                                        ),
+                                        child: ListTile(
+                                          leading: Avatar.small(url: FbUser['profilePicURL']),
+                                          title: Text(FbUser['userName']),
+                                          trailing: ElevatedButton(
+                                            onPressed: () {
+                                              addFriendUIDToFirestore(FbUser);
+                                            },
+                                            child: Icon(CupertinoIcons.person_add_solid),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
                                   /*
                                   return items[index].when(
                                     headerItem: (_) => const SizedBox.shrink(),
                                     userItem: (user) => _SearchContactAddTile(
                                         user: user, context: context),
-
                                    */
-                                  return Text("Build ongoing");
                                 },
                               ),
                             );
@@ -110,81 +166,6 @@ class FriendSearchScreenState extends State<FriendSearchScreen> {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _SearchContactAddTile extends StatelessWidget {
-  const _SearchContactAddTile({
-    Key? key,
-    required this.user,
-    this.context,
-  }) : super(key: key);
-
-  final core.User user;
-  final context;
-
-  addFriendUIDToFirestore() async {
-    final useremail = FirebaseAuth.instance.currentUser?.email;
-    await FirebaseFirestore.instance.collection("users").doc(useremail).set({
-      "friendList": {user.id: user.name}
-    }, SetOptions(merge: true));
-
-    Timer? timer = Timer(Duration(milliseconds: 1000), () {
-      Navigator.of(context, rootNavigator: true).pop();
-    });
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => CupertinoAlertDialog(
-        title: Text(
-          'Friend Added!',
-          style: GoogleFonts.openSans(fontSize: 26),
-        ),
-        content: Text('🤖💓',
-            style: TextStyle(
-              fontSize: 40,
-            )),
-      ),
-    ).then((value) {
-      // dispose the timer in case something else has triggered the dismiss.
-      timer?.cancel();
-      timer = null;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {},
-      child: Padding(
-        padding: const EdgeInsets.only(top: 8),
-        child: Container(
-          // message bar height
-          height: 64,
-          margin: const EdgeInsets.symmetric(horizontal: 8),
-
-          // bottom grey line
-          decoration: const BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: Colors.grey,
-                width: 0.2,
-              ),
-            ),
-          ),
-          child: ListTile(
-            leading: Avatar.small(url: user.image),
-            title: Text(user.name),
-            trailing: ElevatedButton(
-              onPressed: () {
-                addFriendUIDToFirestore();
-              },
-              child: Icon(CupertinoIcons.person_add_solid),
-            ),
-          ),
-        ),
-      ),
     );
   }
 }
