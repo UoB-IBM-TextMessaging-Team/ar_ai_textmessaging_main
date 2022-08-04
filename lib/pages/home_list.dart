@@ -24,7 +24,7 @@ class ContactsPageState extends State<ContactsPage> {
 
   @override
   void initState() {
-    _userListController.loadData;
+    //_userListController.loadData;
     super.initState();
   }
 
