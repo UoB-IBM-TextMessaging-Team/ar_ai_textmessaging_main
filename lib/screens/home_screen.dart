@@ -69,7 +69,7 @@ class _HomePageState extends State<HomePage> {
     if (picture == "") {
       return const AssetImage('assets/images/user1.png');
     } else {
-      return NetworkImage(picture);
+      return CachedNetworkImageProvider(picture);
     }
   }
 

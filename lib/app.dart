@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart' as fireAuth;
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart' as log;
 import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
+import 'package:algolia/algolia.dart';
 
 const streamKey = 'cehah339gsxg';
 
@@ -18,6 +19,15 @@ extension StreamChatContext on BuildContext {
   User? get currentUser => StreamChatCore.of(this).currentUser;
 
 }
+
+
+
+extension AlgoliaContext on BuildContext {
+  Algolia get _algoliaClient => Algolia.init(
+      applicationId: "H6H5367L13", apiKey: "35ba28d360bd7e2e6668d6b81396cde3");
+}
+
+
 /*
 
 ValueNotifier<List<String>> fListNotifier = ValueNotifier<List<String>>(['WooHoo']);
@@ -38,6 +48,8 @@ class friendListNotifier{
   }
 }
 */
+
+
 
 class ZeroDurationRoute extends MaterialPageRoute {
   ZeroDurationRoute({required WidgetBuilder builder}) : super(builder: builder);

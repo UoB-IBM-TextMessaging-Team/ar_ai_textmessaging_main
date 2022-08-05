@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
@@ -89,11 +90,11 @@ class FriendProfile extends StatelessWidget {
                               borderRadius: borderRadius,
                               child: SizedBox.fromSize(
                                 size: Size.fromRadius(32),
-                                child: Image.network(
-                                  Helpers.getChannelImage(
-                                          channel, context.currentUser!) ??
-                                      'assets/images/image0.png',
+                                child: CachedNetworkImage(
                                   fit: BoxFit.cover,
+                                  imageUrl: Helpers.getChannelImage(
+                                      channel, context.currentUser!)??
+                                      'assets/images/image0.png',
                                 ),
                               ),
                             ),
