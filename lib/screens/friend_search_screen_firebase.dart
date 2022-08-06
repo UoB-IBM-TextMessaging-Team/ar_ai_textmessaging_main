@@ -15,12 +15,13 @@ import 'package:google_fonts/google_fonts.dart';
 import '../app_theme.dart';
 import '../models/userAlgoliaProfile.dart';
 import '../pages/home_list.dart';
+import '../theme.dart';
 import '../widgets/avatar.dart';
 import '../widgets/display_error_message.dart';
 import '../widgets/search_bars.dart';
 
 class FriendSearchScreenFb extends StatefulWidget {
-  static Route get route => ZeroDurationRoute(
+  static Route get route => MaterialPageRoute(
         builder: (context) => FriendSearchScreenFb(),
       );
 
@@ -31,21 +32,30 @@ class FriendSearchScreenFb extends StatefulWidget {
 }
 
 class FriendSearchScreenFbState extends State<FriendSearchScreenFb> {
-  String autoCompleteText = 'to search';
+
+  TextEditingController controller = TextEditingController();
+
   final useremail = FirebaseAuth.instance.currentUser?.email;
+
   List<UserAlgoliaProfile> resultList = [];
+  List<String> friendEmails = [];
+  final docRef = FirebaseFirestore.instance
+      .collection("users")
+      .doc(FirebaseAuth.instance.currentUser?.email);
+
 
   Future<void> _getSearchResult(String query) async {
-    AlgoliaQuery algoliaQuery = AlgoliaClient().algoliaClient.instance
+    AlgoliaQuery algoliaQuery = AlgoliaClient()
+        .algoliaClient
+        .instance
         .index("ar_ai_textmessaging_user")
         .query(query);
     AlgoliaQuerySnapshot snapshot = await algoliaQuery.getObjects();
+    print("snapshot");
     print(snapshot);
     final rawData = snapshot.toMap()['hits'] as List;
-    print(rawData);
     final result = List<UserAlgoliaProfile>.from(
         rawData.map((data) => UserAlgoliaProfile.fromJson(data)));
-    print(result);
     setState(() {
       resultList = result;
     });
@@ -69,6 +79,8 @@ class FriendSearchScreenFbState extends State<FriendSearchScreenFb> {
       }
     }, SetOptions(merge: true));
 
+    updateFriendList();
+
     Timer? timer = Timer(Duration(milliseconds: 1000), () {
       Navigator.of(context, rootNavigator: true).pop();
     });
@@ -89,6 +101,25 @@ class FriendSearchScreenFbState extends State<FriendSearchScreenFb> {
       timer?.cancel();
       timer = null;
     });
+  }
+
+  updateFriendList() {
+    docRef.get().then(
+      (DocumentSnapshot doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        var FriList = data['friendList'] as Map<String, dynamic>;
+        setState(() {
+          friendEmails = FriList.keys.toList();
+        });
+      },
+      onError: (e) => print("Error getting document: $e"),
+    );
+  }
+
+  @override
+  void initState() {
+    updateFriendList();
+    super.initState();
   }
 
   @override
@@ -120,14 +151,47 @@ class FriendSearchScreenFbState extends State<FriendSearchScreenFb> {
             ),
             SizedBox(
               height: 50,
-              child: Searcher(onEnterPress: (String s) {
-                if (s.isNotEmpty) {
-                  setState(() {
-                    autoCompleteText = s;
-                    _getSearchResult(autoCompleteText);
-                  });
-                }
-              }),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16), // 搜索框与手机边缘的padding
+                child: Card(
+                  elevation: 0.4,
+                  shape: RoundedRectangleBorder(
+                    //side: const BorderSide(color: Colors.blueGrey),
+                    borderRadius:
+                    BorderRadius.circular(16.0), //<-- SEE HERE change radius
+                  ),
+                  child: Container(
+                    height: 40,
+                    padding: const EdgeInsets.only(
+                      right: 16,
+                    ), // 搜索框内部图标和文字于border之间的padding
+                    child: TextField(
+                      // 文本框+图标
+                      controller: controller,
+                      onChanged: (String s){
+                        if(s.isNotEmpty){
+                          setState(() {
+                            _getSearchResult(s);
+                          });
+                        }
+                      },
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(
+                          CupertinoIcons.search,
+                          size: 24,
+                        ),
+                        border: InputBorder.none,
+                        hintText: 'Search here ...',
+                        hintStyle: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 1,
+                          color: AppColors.textFaded,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ),
             Expanded(
                 child: (resultList.isEmpty)
@@ -136,21 +200,17 @@ class FriendSearchScreenFbState extends State<FriendSearchScreenFb> {
                       )
                     : Scrollbar(
                         child: ListView.builder(
-                          padding: const EdgeInsets.all(0),
+                          padding: const EdgeInsets.only(top:6),
                           itemCount: resultList.length,
                           itemBuilder: (context, index) {
-                            return InkWell(
-                              onTap: () {},
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 8),
-                                child: Container(
+                            return Container(
                                   // message bar height
-                                  height: 64,
+                                  height: 80,
                                   margin:
-                                      const EdgeInsets.symmetric(horizontal: 8),
+                                      const EdgeInsets.symmetric(horizontal: 8,vertical: 6),
 
                                   // bottom grey line
-                                  decoration: const BoxDecoration(
+                                  decoration: BoxDecoration(
                                     border: Border(
                                       bottom: BorderSide(
                                         color: Colors.grey,
@@ -159,27 +219,48 @@ class FriendSearchScreenFbState extends State<FriendSearchScreenFb> {
                                     ),
                                   ),
                                   child: ListTile(
-                                    leading: Avatar.small(
-                                        url: resultList[index].profilePicURL),
-                                    title: Text(resultList[index].userName),
-                                    trailing: ElevatedButton(
-                                      onPressed: () {
-                                        addFriendUIDToFirestore(
-                                            resultList[index]);
-                                      },
-                                      child:
-                                          Icon(CupertinoIcons.person_add_solid),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );
-                            /*
-                                  return items[index].when(
-                                    headerItem: (_) => const SizedBox.shrink(),
-                                    userItem: (user) => _SearchContactAddTile(
-                                        user: user, context: context),
-                                   */
+                                      leading: Avatar.small(
+                                          url: resultList[index].profilePicURL),
+                                      title: Text(resultList[index].userName),
+                                      subtitle:
+                                          Text(resultList[index].userEmail),
+                                      trailing: Builder(
+                                        builder: (BuildContext context) {
+                                          if (resultList[index].userEmail ==
+                                              useremail) {
+                                            return ElevatedButton(
+                                              onPressed: () {},
+                                              style: ButtonStyle(
+                                                  backgroundColor:
+                                                      MaterialStateProperty.all<
+                                                          Color>(Colors.grey)),
+                                              child: Icon(CupertinoIcons
+                                                  .person_alt_circle_fill),
+                                            );
+                                          } else if (friendEmails.contains(
+                                              resultList[index].userEmail)) {
+                                            return ElevatedButton(
+                                              onPressed: () {},
+                                              style: ButtonStyle(
+                                                  backgroundColor:
+                                                      MaterialStateProperty.all<
+                                                          Color>(Colors.grey)),
+                                              child: Icon(CupertinoIcons
+                                                  .check_mark_circled_solid),
+                                            );
+                                          } else {
+                                            return ElevatedButton(
+                                              onPressed: () {
+                                                addFriendUIDToFirestore(
+                                                    resultList[index]);
+                                              },
+                                              child: Icon(CupertinoIcons
+                                                  .person_add_solid),
+                                            );
+                                          }
+                                        },
+                                      )),
+                                );
                           },
                         ),
                       )),
@@ -189,3 +270,4 @@ class FriendSearchScreenFbState extends State<FriendSearchScreenFb> {
     );
   }
 }
+
