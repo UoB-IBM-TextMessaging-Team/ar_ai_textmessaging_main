@@ -22,8 +22,8 @@ extension StreamChatContext on BuildContext {
 
 
 
-extension AlgoliaContext on BuildContext {
-  Algolia get _algoliaClient => Algolia.init(
+class AlgoliaClient {
+  Algolia algoliaClient = Algolia.init(
       applicationId: "H6H5367L13", apiKey: "35ba28d360bd7e2e6668d6b81396cde3");
 }
 

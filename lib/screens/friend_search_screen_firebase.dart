@@ -1,8 +1,10 @@
 import 'dart:async';
 
+import 'package:algolia/algolia.dart';
 import 'package:ar_ai_messaging_client_frontend/app.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart' as core;
 import 'package:flutter/cupertino.dart';
@@ -11,6 +13,7 @@ import 'package:google_fonts/google_fonts.dart';
 //import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
 
 import '../app_theme.dart';
+import '../models/userAlgoliaProfile.dart';
 import '../pages/home_list.dart';
 import '../widgets/avatar.dart';
 import '../widgets/display_error_message.dart';
@@ -29,16 +32,37 @@ class FriendSearchScreenFb extends StatefulWidget {
 
 class FriendSearchScreenFbState extends State<FriendSearchScreenFb> {
   String autoCompleteText = 'to search';
+  final useremail = FirebaseAuth.instance.currentUser?.email;
+  List<UserAlgoliaProfile> resultList = [];
 
-  addFriendUIDToFirestore(DocumentSnapshot fbUser) async {
-    final useremail = FirebaseAuth.instance.currentUser?.email;
+  Future<void> _getSearchResult(String query) async {
+    AlgoliaQuery algoliaQuery = AlgoliaClient().algoliaClient.instance
+        .index("ar_ai_textmessaging_user")
+        .query(query);
+    AlgoliaQuerySnapshot snapshot = await algoliaQuery.getObjects();
+    print(snapshot);
+    final rawData = snapshot.toMap()['hits'] as List;
+    print(rawData);
+    final result = List<UserAlgoliaProfile>.from(
+        rawData.map((data) => UserAlgoliaProfile.fromJson(data)));
+    print(result);
+    setState(() {
+      resultList = result;
+    });
+  }
+
+  addFriendUIDToFirestore(UserAlgoliaProfile friendToAdd) async {
+    // Detect self adding
+    String targetEmail = friendToAdd.userEmail;
+    if (targetEmail == useremail) return;
+
     await FirebaseFirestore.instance.collection("users").doc(useremail).set({
-      "friendList": {fbUser['userEmail']: fbUser['userName']}
+      "friendList": {friendToAdd.userEmail: friendToAdd.userName}
     }, SetOptions(merge: true));
 
     await FirebaseFirestore.instance
         .collection("users")
-        .doc(fbUser['userEmail'])
+        .doc(friendToAdd.userEmail)
         .set({
       "friendList": {
         useremail: core.StreamChatCore.of(context).currentUser?.name
@@ -69,7 +93,6 @@ class FriendSearchScreenFbState extends State<FriendSearchScreenFb> {
 
   @override
   Widget build(BuildContext context) {
-    bool shouldPop = true;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Container(
@@ -101,81 +124,65 @@ class FriendSearchScreenFbState extends State<FriendSearchScreenFb> {
                 if (s.isNotEmpty) {
                   setState(() {
                     autoCompleteText = s;
+                    _getSearchResult(autoCompleteText);
                   });
                 }
               }),
             ),
             Expanded(
-              child: StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection('users')
-                      .where('userName',
-                          isGreaterThanOrEqualTo: autoCompleteText,
-                          isLessThanOrEqualTo: autoCompleteText + '\uf8ff')
-                      .snapshots(),
-                  builder: (context, snapshots) {
-                    return (snapshots.connectionState ==
-                            ConnectionState.waiting)
-                        ? Center(
-                            child: CircularProgressIndicator(),
-                          )
-                        : (snapshots.data?.docs.length == 0)
-                            ? Center(
-                                child: Center(child: Text('No users found')),
-                              )
-                            : Scrollbar(
-                                child: ListView.builder(
-                                  padding: const EdgeInsets.all(0),
-                                  itemCount: snapshots.data?.docs.length,
-                                  itemBuilder: (context, index) {
-                                    DocumentSnapshot FbUser =
-                                        snapshots.data?.docs[index]
-                                            as DocumentSnapshot<Object?>;
-                                    return InkWell(
-                                      onTap: () {},
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(top: 8),
-                                        child: Container(
-                                          // message bar height
-                                          height: 64,
-                                          margin: const EdgeInsets.symmetric(
-                                              horizontal: 8),
+                child: (resultList.isEmpty)
+                    ? Center(
+                        child: Center(child: Text('No users found')),
+                      )
+                    : Scrollbar(
+                        child: ListView.builder(
+                          padding: const EdgeInsets.all(0),
+                          itemCount: resultList.length,
+                          itemBuilder: (context, index) {
+                            return InkWell(
+                              onTap: () {},
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: Container(
+                                  // message bar height
+                                  height: 64,
+                                  margin:
+                                      const EdgeInsets.symmetric(horizontal: 8),
 
-                                          // bottom grey line
-                                          decoration: const BoxDecoration(
-                                            border: Border(
-                                              bottom: BorderSide(
-                                                color: Colors.grey,
-                                                width: 0.2,
-                                              ),
-                                            ),
-                                          ),
-                                          child: ListTile(
-                                            leading: Avatar.small(
-                                                url: FbUser['profilePicURL']),
-                                            title: Text(FbUser['userName']),
-                                            trailing: ElevatedButton(
-                                              onPressed: () {
-                                                addFriendUIDToFirestore(FbUser);
-                                              },
-                                              child: Icon(CupertinoIcons
-                                                  .person_add_solid),
-                                            ),
-                                          ),
-                                        ),
+                                  // bottom grey line
+                                  decoration: const BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(
+                                        color: Colors.grey,
+                                        width: 0.2,
                                       ),
-                                    );
-                                    /*
+                                    ),
+                                  ),
+                                  child: ListTile(
+                                    leading: Avatar.small(
+                                        url: resultList[index].profilePicURL),
+                                    title: Text(resultList[index].userName),
+                                    trailing: ElevatedButton(
+                                      onPressed: () {
+                                        addFriendUIDToFirestore(
+                                            resultList[index]);
+                                      },
+                                      child:
+                                          Icon(CupertinoIcons.person_add_solid),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                            /*
                                   return items[index].when(
                                     headerItem: (_) => const SizedBox.shrink(),
                                     userItem: (user) => _SearchContactAddTile(
                                         user: user, context: context),
                                    */
-                                  },
-                                ),
-                              );
-                  }),
-            )
+                          },
+                        ),
+                      )),
           ],
         ),
       ),
