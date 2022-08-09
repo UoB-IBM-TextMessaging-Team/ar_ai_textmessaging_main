@@ -65,6 +65,7 @@ class _UserSettingState extends State<UserSetting> {
     if (_photo == null) return;
     final destination = 'profilePicture/$user';
 
+    /*
     // Compress the image
     String dir = (await getTemporaryDirectory()).path;
     File compressFile = new File('$dir/lastProfileCompressed.jpeg');;
@@ -73,11 +74,13 @@ class _UserSettingState extends State<UserSetting> {
       quality: 5,
     );
 
+
+     */
     try {
       final ref = firebase_storage.FirebaseStorage.instance
           .ref(destination)
           .child('${user}_profile_Picture/');
-      await ref.putFile(compressFile!);
+      await ref.putFile(_photo!);
     } catch (e) {
       // ignore: avoid_print
       print('error occured');
@@ -270,6 +273,7 @@ class _UserSettingState extends State<UserSetting> {
   void takePhoto(ImageSource source) async {
     final pickedFile = await _picker.pickImage(
       source: source,
+      imageQuality: 10
     );
     // the picture in the gallery or camera store in _photo
     setState(() {
