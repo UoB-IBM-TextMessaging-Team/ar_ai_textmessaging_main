@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import '../app_theme.dart';
 import '../screens/screens.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
@@ -68,9 +69,14 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
+      backgroundColor: MyTheme.AppBarTheme,
       body: Center(
-        child: CircularProgressIndicator(),
+        child: Image.asset(
+                  'assets/logos/app_logo.jpg',
+                  width: 180,
+                  height: 180,
+              ),
       ),
     );
   }

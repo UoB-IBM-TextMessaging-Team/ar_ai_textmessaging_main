@@ -265,7 +265,7 @@ class __SignOutButtonState extends State<_SignOutButton> {
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             onPressed: _signOut,
-            color: Colors.deepPurple[200],
+            color: Theme.of(context).backgroundColor,
             child: const Text(
               'Sign out',
             ),
@@ -311,7 +311,7 @@ class __SignOutButtonState extends State<_SignOutButton> {
 //   //   }
 //   // }
 
-//   @override
+//   @overrides
 //   Widget build(BuildContext context) {
 //     final borderRadius = BorderRadius.circular(20);
 //     return Container(
@@ -355,7 +355,7 @@ class __SignOutButtonState extends State<_SignOutButton> {
 //             padding: EdgeInsets.only(top: 32, left: 16, right: 16),
 //             height: double.maxFinite,
 //             decoration: BoxDecoration(
-//               color: Theme.of(context).cardColor, // 首页列表背景色 <=========
+//               color: c, // 首页列表背景色 <=========
 //               borderRadius: const BorderRadius.only(
 //                 topLeft: Radius.circular(30),
 //                 topRight: Radius.circular(30),
