@@ -161,6 +161,7 @@ class _HomePageState extends State<HomePage> {
                         return CircleAvatar(
                           radius: 30,
                           backgroundImage: choosePic(),
+                          backgroundColor: Theme.of(context).backgroundColor,
                         );
                       }),
                 ),

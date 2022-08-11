@@ -51,7 +51,7 @@ class _UserProfileState extends State<UserProfile> {
     final user = context.currentUser;
     final borderRadius = BorderRadius.circular(20);
     return Stack(
-      /*
+        /*
       decoration: const BoxDecoration(
         image: DecorationImage(
           image: ExactAssetImage('assets/images/image1.jpg'),
@@ -60,170 +60,173 @@ class _UserProfileState extends State<UserProfile> {
         ),
       ),
        */
-      children: [
-        Container(
-          margin: const EdgeInsets.only(top: 0),
-          height: 450,
-          color: Colors.cyan,
-        ),
-        Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          title: const Text('Profile'),
-          backgroundColor: Colors.transparent,
-          centerTitle: true,
-          leading: Center(
-            child: IconBackground(
-              icon: Icons.arrow_back_ios_new,
-              onTap: () {
-                Navigator.of(context).pop();
-              },
-            ),
+        children: [
+          Container(
+            margin: const EdgeInsets.only(top: 0),
+            height: 450,
+            color: Colors.cyan,
           ),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Center(
+          Scaffold(
+            backgroundColor: Colors.transparent,
+            appBar: AppBar(
+              title: const Text('Profile'),
+              backgroundColor: Colors.transparent,
+              centerTitle: true,
+              leading: Center(
                 child: IconBackground(
-                    icon: Icons.settings,
-                    onTap: () {
-                      print('Setting');
-                    }),
+                  icon: Icons.arrow_back_ios_new,
+                  onTap: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
               ),
+              actions: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Center(
+                    child: IconBackground(
+                        icon: Icons.settings,
+                        onTap: () {
+                          print('Setting');
+                        }),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-        body: Padding(
-          padding:
-              EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.35),
-          child: Container(
-            padding: const EdgeInsets.only(top: 32, left: 16, right: 16),
-            height: double.maxFinite,
-            decoration: BoxDecoration(
-              color: Theme.of(context).cardColor, // 首页列表背景色 <=========
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(30),
-                topRight: Radius.circular(30),
-              ),
-            ),
-            child: Column(
-              children: [
-                Row(
+            body: Padding(
+              padding: EdgeInsets.only(
+                  top: MediaQuery.of(context).size.height * 0.35),
+              child: Container(
+                padding: const EdgeInsets.only(top: 32, left: 16, right: 16),
+                height: double.maxFinite,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor, // 首页列表背景色 <=========
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(30),
+                    topRight: Radius.circular(30),
+                  ),
+                ),
+                child: Column(
                   children: [
-                    Expanded(
-                      child: Row(
-                        children: [
-                          Hero(
-                            tag: 'hero-profile-picture',
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  color: Theme.of(context).cardColor,
-                                  borderRadius: borderRadius),
-                              child: ClipRRect(
-                                borderRadius: borderRadius,
-                                child: SizedBox.fromSize(
-                                  size: Size.fromRadius(32),
-                                  child:
-                                      //
-                                      FutureBuilder(
-                                    future: findProfilePic(),
-                                    builder: (context, snapshot) {
-                                      return CircleAvatar(
-                                          radius: 80.0,
-                                          backgroundImage: choosePic());
-                                    },
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Hero(
+                                tag: 'hero-profile-picture',
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      color: Theme.of(context).cardColor,
+                                      borderRadius: borderRadius),
+                                  child: ClipRRect(
+                                    borderRadius: borderRadius,
+                                    child: SizedBox.fromSize(
+                                      size: Size.fromRadius(32),
+                                      child:
+                                          //
+                                          FutureBuilder(
+                                        future: findProfilePic(),
+                                        builder: (context, snapshot) {
+                                          return CircleAvatar(
+                                            radius: 80.0,
+                                            backgroundImage: choosePic(),
+                                            backgroundColor: Theme.of(context)
+                                                .backgroundColor,
+                                          );
+                                        },
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Text(
-                                user?.name ?? 'no name',
-                                style: MyTheme.senderName,
+                              const SizedBox(width: 8),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  Text(
+                                    user?.name ?? 'no name',
+                                    style: MyTheme.senderName,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    'Email: ${useremail}',
+                                    style: MyTheme.textTime,
+                                  )
+                                ],
                               ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Email: ${useremail}',
-                                style: MyTheme.textTime,
-                              )
                             ],
                           ),
-                        ],
-                      ),
-                    ),
-                    GestureDetector(
-                        onTap: () {
-                          print('edit profile');
+                        ),
+                        GestureDetector(
+                            onTap: () {
+                              print('edit profile');
 
-                          Navigator.of(context)
-                              .push(UserSetting.route)
-                              .then((_) => setState(() => {}));
-                        },
-                        child: const Icon(Icons.arrow_forward_ios_rounded))
-                  ],
-                ),
-                const Divider(
-                  thickness: 1,
-                ),
-                const SizedBox(height: 24),
-                GestureDetector(
-                  onTap: () {
-                    print('change avatar');
-                  },
-                  child: Container(
-                    height: 48,
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: MyTheme.kPrimaryColor,
-                      borderRadius: borderRadius,
+                              Navigator.of(context)
+                                  .push(UserSetting.route)
+                                  .then((_) => setState(() => {}));
+                            },
+                            child: const Icon(Icons.arrow_forward_ios_rounded))
+                      ],
                     ),
-                    child: Center(
-                      child: Text(
-                        'Change Avatar',
-                        style: MyTheme.buttonText,
+                    const Divider(
+                      thickness: 1,
+                    ),
+                    const SizedBox(height: 24),
+                    GestureDetector(
+                      onTap: () {
+                        print('change avatar');
+                      },
+                      child: Container(
+                        height: 48,
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: MyTheme.kPrimaryColor,
+                          borderRadius: borderRadius,
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Change Avatar',
+                            style: MyTheme.buttonText,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                GestureDetector(
-                  onTap: (() {
-                    print('change voice');
-                  }),
-                  child: Container(
-                    height: 48,
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      /*gradient: LinearGradient(
+                    const SizedBox(height: 16),
+                    GestureDetector(
+                      onTap: (() {
+                        print('change voice');
+                      }),
+                      child: Container(
+                        height: 48,
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          /*gradient: LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [MyTheme.kPrimaryColor, Colors.black26],
                       ),*/
-                      color: MyTheme.kPrimaryColor,
-                      borderRadius: borderRadius,
-                    ),
-                    child: Center(
-                      child: Text(
-                        'Custom Voice',
-                        style: MyTheme.buttonText,
+                          color: MyTheme.kPrimaryColor,
+                          borderRadius: borderRadius,
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Custom Voice',
+                            style: MyTheme.buttonText,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                    const SizedBox(height: 32),
+                    const _SignOutButton()
+                  ],
                 ),
-                const SizedBox(height: 32),
-                const _SignOutButton()
-              ],
+              ),
             ),
           ),
-        ),
-      ),
-      ]
-    );
+        ]);
   }
 }
 

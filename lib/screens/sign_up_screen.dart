@@ -326,7 +326,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (_photo == null) return;
     //storage
 
-
     /*
 
     // Compress the image
@@ -357,10 +356,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
       await FirebaseFirestore.instance
           .collection("users")
           .doc(_emailController.text.trim())
-          .set({"profilePicURL": downloadUrl,
-                "friendList":{' ':'Occupation for avoid getstream.io service query error'},
-                "userName":_nameController.text,
-                "userEmail":_emailController.text});
+          .set({
+        "profilePicURL": downloadUrl,
+        "friendList": {
+          ' ': 'Occupation for avoid getstream.io service query error'
+        },
+        "userName": _nameController.text,
+        "userEmail": _emailController.text
+      });
     } catch (e) {
       // ignore: avoid_print
       print('error occured');
@@ -638,7 +641,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return Center(
       child: Stack(
         children: <Widget>[
-          CircleAvatar(radius: 80.0, backgroundImage: choosePic()),
+          CircleAvatar(
+            radius: 80.0,
+            backgroundImage: choosePic(),
+            backgroundColor: Theme.of(context).backgroundColor,
+          ),
           Positioned(
             bottom: 20.0,
             right: 20.0,
