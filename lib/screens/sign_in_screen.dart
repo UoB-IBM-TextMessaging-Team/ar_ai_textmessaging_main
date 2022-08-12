@@ -125,7 +125,7 @@ class _SignInScreenState extends State<SignInScreen> {
       //   centerTitle: true,
       //   backgroundColor: Colors.deepPurple[200],
       // ),
-      backgroundColor: Colors.grey[300],
+      backgroundColor: MyTheme.AppBarTheme,
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -136,19 +136,20 @@ class _SignInScreenState extends State<SignInScreen> {
                   child: Column(
                     children: [
                       SizedBox(height: 70),
-                      Icon(
-                        Icons.phone_android,
-                        size: 100,
-                        color: Colors.deepPurple[500],
-                      ),
-                      SizedBox(height: 40),
+                    Image.asset(
+                      'assets/logos/app_logo.jpg',
+                      width: 120,
+                      height: 120,
+                    ),
+                      SizedBox(height: 30),
                       Text(
-                        'Hello Again!',
-                        style: GoogleFonts.bebasNeue(
-                          fontSize: 52,
-                          color: Colors.black,
+                        'Welcome to JammoChat',
+                        style: GoogleFonts.grandHotel(
+                          fontSize: 42,
+                          color: Colors.white,
                         ),
                       ),
+                      SizedBox(height: 20),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Container(
@@ -203,13 +204,15 @@ class _SignInScreenState extends State<SignInScreen> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(20.0),
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            primary: Colors.deepPurple, // background
+                            primary: MyTheme.kPrimaryColorVariant, // background
                             onPrimary: Colors.white, // foreground
-                            fixedSize: Size(120, 20),
-                          ),
+                            fixedSize: Size(80, 80),
+                            shape: CircleBorder(),
+                            //padding: EdgeInsets.all(24),
+                            ),
                           onPressed: _signIn,
                           child: const Text(
                             'Sign in',
@@ -222,9 +225,9 @@ class _SignInScreenState extends State<SignInScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'Already have an account?',
+                            'Do not have an account?',
                             style: TextStyle(
-                                color: Colors.black,
+                                color: Colors.white,
                                 fontWeight: FontWeight.bold),
                             // style: Theme.of(context).textTheme.subtitle2,
                           ),
