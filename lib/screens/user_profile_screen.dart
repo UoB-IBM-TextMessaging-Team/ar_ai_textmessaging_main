@@ -27,7 +27,7 @@ class _UserProfileState extends State<UserProfile> {
   final useremail = FirebaseAuth.instance.currentUser?.email;
   choosePic() {
     if (picture == "") {
-      return const AssetImage('assets/images/user1.png');
+      return const AssetImage('assets/logos/app_logo_bw.jpg');
     } else {
       return NetworkImage(picture);
     }
